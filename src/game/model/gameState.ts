@@ -11,14 +11,6 @@ export class GameState {
   constructor(public dbGame: Game) {
     makeAutoObservable(this);
   }
-
-  public setHost(player: Player) {
-    this.host = player;
-  }
-
-  public setChallenger(player: Player) {
-    this.challenger = player;
-  }
 }
 
 export interface Player {

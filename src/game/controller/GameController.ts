@@ -3,6 +3,7 @@ import {
   fetchPlayersForGame,
   provideSupabaseClient,
 } from "@/game/db/db";
+import { EventLog } from "@/game/model/eventLog";
 import { GameState } from "@/game/model/gameState";
 import { initGameRenderer } from "@/game/renderer/GameRenderer";
 import { createClient } from "@/supabase/client";
@@ -16,6 +17,7 @@ export interface GameClientProps {
 
 export class GameController {
   public state: GameState | null = null;
+  public readonly eventLog: EventLog;
 
   private readonly presenceChannel: RealtimeChannel;
 
@@ -26,6 +28,8 @@ export class GameController {
     const supabase = createClient();
     provideSupabaseClient(supabase);
     this.presenceChannel = supabase.channel(`game-${clientProps.gameId}`);
+
+    this.eventLog = new EventLog();
   }
 
   public async init() {
@@ -39,13 +43,16 @@ export class GameController {
       profile: host,
       connected: false,
     };
-
     if (challenger != null) {
       this.state.challenger = {
         profile: challenger,
         connected: false,
       };
     }
+
+    // Setup the renderer.
+    const renderer = await initGameRenderer(this.container);
+    this.eventLog.log("Initialized client view");
 
     // Setup supabase realtime event listeners.
     this.presenceChannel
@@ -58,9 +65,6 @@ export class GameController {
     this.presenceChannel.track({
       userId: this.clientProps.userId,
     });
-
-    // Setup the renderer.
-    const renderer = await initGameRenderer(this.container);
   }
 
   private async handlePresenceSync(presenceState: RealtimePresenceState<any>) {
@@ -80,21 +84,34 @@ export class GameController {
       }
     }
 
-    console.log("Updated presence");
-    console.dir(connectedPlayers);
-
     if (this.state.host) {
-      this.state.setHost({
-        ...this.state.host,
-        connected: connectedPlayers.has(this.state.host.profile.id),
-      });
+      const connected = connectedPlayers.has(this.state.host.profile.id);
+      if (connected != this.state.host.connected) {
+        this.eventLog.log(
+          `${this.state.host.profile.username} ${
+            connected ? "connected" : "disconnected"
+          }`
+        );
+        this.state.host = {
+          ...this.state.host,
+          connected,
+        };
+      }
     }
+
     if (this.state.challenger) {
-      this.state.setChallenger({
-        ...this.state.challenger,
-        connected: connectedPlayers.has(this.state.challenger.profile.id),
-      });
+      const connected = connectedPlayers.has(this.state.challenger.profile.id);
+      if (connected != this.state.challenger.connected) {
+        this.eventLog.log(
+          `${this.state.challenger.profile.username} ${
+            connected ? "connected" : "disconnected"
+          }`
+        );
+        this.state.challenger = {
+          ...this.state.challenger,
+          connected,
+        };
+      }
     }
-    console.dir(this.state);
   }
 }

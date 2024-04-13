@@ -1,5 +1,6 @@
 "use client";
 
+import EventLogView from "@/components/panels/EventLogView";
 import PlayerList from "@/components/panels/PlayerList";
 import {
   GameClientProps,
@@ -30,6 +31,7 @@ export default function GameClient(props: GameClientProps) {
       {gameController?.state == null ? null : (
         <>
           <PlayerList gameState={gameController.state} />
+          <EventLogView eventLog={gameController.eventLog} />
         </>
       )}
     </div>
