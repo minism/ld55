@@ -17,7 +17,7 @@ export default class Viewport extends Container {
   private dragStart: Point | null = null;
   private positionStart: Point;
 
-  private lastHoveredHex: Hex | null = null;
+  public hoveredWorldHex: Hex | null = null;
 
   constructor(private screen: Rectangle, private tooltip: TooltipModel) {
     super();
@@ -48,12 +48,13 @@ export default class Viewport extends Container {
 
     // Check if hex exists.
     if (world.grid.hasHex(hex)) {
-      this.lastHoveredHex = hex;
+      this.hoveredWorldHex = hex;
       this.tooltip.visible = true;
       this.tooltip.positionX = event.global.x;
       this.tooltip.positionY = event.global.y;
       this.tooltip.text = `Tile (${hex.q},${hex.r})`;
     } else {
+      this.hoveredWorldHex = null;
       this.tooltip.visible = false;
     }
 

@@ -1,3 +1,4 @@
+import { GameState } from "@/game/db/gameState";
 import { Game } from "@/game/db/types";
 import { Database } from "@/generated/database.types";
 import { createClient } from "@/supabase/client";
@@ -8,8 +9,8 @@ export function provideSupabaseClient(client: SupabaseClient<Database>) {
   supabase = client;
 }
 
-export async function fetchGameState(gameId: string) {
-  return (
+export async function fetchGameState(gameId: string): Promise<Game> {
+  const game = (
     await supabase
       .from("game")
       .select()
@@ -17,6 +18,20 @@ export async function fetchGameState(gameId: string) {
       .single()
       .throwOnError()
   ).data!;
+
+  return {
+    ...game,
+    // @ts-expect-error
+    state: game.state as GameState,
+  };
+}
+
+export async function updateGameState(game: Game) {
+  await supabase
+    .from("game")
+    .update({ state: game.state })
+    .eq("id", game.id)
+    .throwOnError();
 }
 
 export async function fetchPlayersForGame(game: Game) {

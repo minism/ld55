@@ -1,24 +1,18 @@
-import {
-  Application,
-  Container,
-  FederatedPointerEvent,
-  Rectangle,
-  Sprite,
-  Texture,
-} from "pixi.js";
-import { getAsset, getTexture, loadAllAssets } from "../assets";
-import world from "../World";
-import Viewport from "@/game/renderer/Viewport";
-import OverlayGrid from "@/game/renderer/OverlayGrid";
-import WorldTile from "@/game/renderer/WorldTile";
 import gameConfig from "@/game/config/gameConfig";
-import { TooltipModel } from "@/game/model/tooltipModel";
-import { Hex } from "honeycomb-grid";
+import { IGameEvents } from "@/game/controller/IGameEvents";
 import { GameModel } from "@/game/model/gameModel";
+import { TooltipModel } from "@/game/model/tooltipModel";
+import OverlayGrid from "@/game/renderer/OverlayGrid";
+import Viewport from "@/game/renderer/Viewport";
+import WorldTile from "@/game/renderer/WorldTile";
+import { Application, Rectangle, Sprite } from "pixi.js";
+import world from "../World";
+import { getTexture, loadAllAssets } from "../assets";
 
 let _renderer: GameRenderer | null = null;
 export async function initGameRenderer(
   container: HTMLElement,
+  handler: IGameEvents,
   tooltip: TooltipModel
 ) {
   if (_renderer != null) {
@@ -26,7 +20,7 @@ export async function initGameRenderer(
     return _renderer;
   }
 
-  _renderer = new GameRenderer(tooltip);
+  _renderer = new GameRenderer(handler, tooltip);
   await _renderer.init(container);
   return _renderer;
 }
@@ -37,7 +31,10 @@ export default class GameRenderer {
 
   private entityViews: Record<string, Sprite> = {};
 
-  constructor(private readonly tooltip: TooltipModel) {
+  constructor(
+    private readonly handler: IGameEvents,
+    private readonly tooltip: TooltipModel
+  ) {
     this.app = new Application();
     this.viewport = new Viewport(new Rectangle(0, 0, 0, 0), this.tooltip);
   }
@@ -58,7 +55,7 @@ export default class GameRenderer {
     this.viewport.centerOn(0, 0);
     this.app.stage.addChild(this.viewport);
 
-    // Viewport events.
+    // Stage events.
     this.app.stage.hitArea = this.app.screen;
     this.app.stage.eventMode = "static";
     this.app.stage.on(
@@ -73,6 +70,11 @@ export default class GameRenderer {
       "pointermove",
       this.viewport.handlePointerMove.bind(this.viewport)
     );
+    this.app.stage.on("pointerdown", () => {
+      if (this.viewport.hoveredWorldHex != null) {
+        this.handler.handleClickWorldHex(this.viewport.hoveredWorldHex);
+      }
+    });
 
     // Start renderer.
     await assetPromise;
@@ -86,19 +88,17 @@ export default class GameRenderer {
 
   public update(model: GameModel) {
     // Update entity rendering - retained-mode style.
-    for (const entity of model.state.entities) {
+    for (const [id, entity] of Object.entries(model.state.entities)) {
       // TODO: Handle destroy.
-      if (!this.entityViews[entity.id]) {
-        this.entityViews[entity.id] = new Sprite();
-        this.viewport.mainContainer.addChild(this.entityViews[entity.id]);
+      if (!this.entityViews[id]) {
+        this.entityViews[id] = new Sprite();
+        this.viewport.mainContainer.addChild(this.entityViews[id]);
       }
-      const view = this.entityViews[entity.id];
+      const view = this.entityViews[id];
       view.texture = getTexture(entity.type);
       view.anchor.set(0.5);
       const hex = world.grid.getHex([entity.tile.q, entity.tile.r]);
       if (hex != null) {
-        console.dir(entity.tile);
-        console.dir(hex.origin);
         view.position.x = hex.x;
         view.position.y = hex.y;
       } else {

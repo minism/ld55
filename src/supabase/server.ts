@@ -1,3 +1,4 @@
+import { provideSupabaseClient } from "@/game/db/db";
 import { Database } from "@/generated/database.types";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { configDotenv } from "dotenv";
@@ -40,29 +41,14 @@ export const createClient = <T = Database>() => {
   );
 };
 
-export async function getAuthenticatedSupabaseOrRedirect<T = Database>(
-  requireAdmin = false
-) {
+export async function getAuthenticatedSupabaseOrRedirect() {
   // Lookup the user.
-  const supabase = createClient<T>();
+  const supabase = createClient<Database>();
+  provideSupabaseClient(supabase);
   const response = await supabase.auth.getUser();
   const user = response.data.user;
   if (user == null) {
     return redirect("/login");
   }
-
-  // Run user initialization logic.
-  const { data: profile } = await supabase
-    .from("user_profile")
-    .select()
-    .eq("id", user.id)
-    .throwOnError()
-    .single();
-
-  return { supabase, user: user!, profile: profile! };
-}
-
-enum InitializeUserResult {
-  OK,
-  NO_MATCHING_TEAM_DOMAIN,
+  return { supabase, user: user! };
 }

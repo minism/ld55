@@ -9,11 +9,15 @@ export class GameModel {
   host: Player | null = null;
   challenger: Player | null = null;
 
-  get state(): GameState {
+  get state() {
     return this.dbGame.state;
   }
 
-  constructor(public dbGame: Game) {
+  get areHost() {
+    return this.dbGame.host_id == this.ourUserId;
+  }
+
+  constructor(public dbGame: Game, public readonly ourUserId: string) {
     makeAutoObservable(this);
   }
 }

@@ -1,7 +1,7 @@
 // Shared game state, saved to DB.
 export interface GameState {
   turn: number;
-  entities: Entity[];
+  entities: Record<string, Entity>;
 }
 
 export interface Entity {
@@ -21,8 +21,8 @@ export interface TilePosition {
 export function initialGameState(): GameState {
   return {
     turn: 0,
-    entities: [
-      {
+    entities: {
+      "1": {
         id: 1,
         type: "wizard",
         tile: {
@@ -31,7 +31,7 @@ export function initialGameState(): GameState {
         },
         owner: true,
       },
-      {
+      "2": {
         id: 2,
         type: "wizard",
         tile: {
@@ -40,6 +40,6 @@ export function initialGameState(): GameState {
         },
         owner: false,
       },
-    ],
+    },
   };
 }

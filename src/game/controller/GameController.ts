@@ -1,3 +1,5 @@
+import { apiMove } from "@/game/api";
+import { IGameEvents } from "@/game/controller/IGameEvents";
 import {
   fetchGameState,
   fetchPlayersForGame,
@@ -9,6 +11,7 @@ import { TooltipModel } from "@/game/model/tooltipModel";
 import { initGameRenderer } from "@/game/renderer/GameRenderer";
 import { createClient } from "@/supabase/client";
 import { RealtimeChannel, RealtimePresenceState } from "@supabase/supabase-js";
+import { Hex } from "honeycomb-grid";
 import { configure, reaction } from "mobx";
 
 configure({
@@ -21,7 +24,7 @@ export interface GameClientProps {
   userId: string;
 }
 
-export class GameController {
+export class GameController implements IGameEvents {
   public model: GameModel | null = null;
   public readonly eventLog: EventLog;
   public readonly tooltip: TooltipModel;
@@ -44,7 +47,7 @@ export class GameController {
   public async init() {
     // Init game state.
     const dbGame = await fetchGameState(this.clientProps.gameId);
-    this.model = new GameModel(dbGame);
+    this.model = new GameModel(dbGame, this.clientProps.userId);
 
     // Init player state.
     const { host, challenger } = await fetchPlayersForGame(dbGame);
@@ -60,9 +63,8 @@ export class GameController {
     }
 
     // Setup the renderer.
-    const renderer = await initGameRenderer(this.container, this.tooltip);
+    const renderer = await initGameRenderer(this.container, this, this.tooltip);
     this.eventLog.log("Initialized client view");
-    this.eventLog.log(JSON.stringify(this.model.state));
     reaction(
       () => this.model,
       (model) => {
@@ -133,5 +135,22 @@ export class GameController {
         };
       }
     }
+  }
+
+  public async handleClickWorldHex(hex: Hex) {
+    // TODO: Refactor this part
+    const ourWizard = Object.values(this.model!.state.entities).find(
+      (e) => e.type == "wizard" && e.owner == this.model!.areHost
+    );
+    if (ourWizard == null) {
+      throw new Error("no wizard for player?");
+    }
+
+    await apiMove({
+      gameId: this.clientProps.gameId,
+      entityId: ourWizard.id,
+      q: hex.q,
+      r: hex.r,
+    });
   }
 }
