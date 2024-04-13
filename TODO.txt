@@ -2,7 +2,4 @@ x Simple map with 3 tile types (grass, water, forest)
 x 1x scale overlay grid
 x floating panel concept
 x player presence
-
-- turn based hero movement
-
-- Very dumb proc gen for world
+x turn based hero movement
