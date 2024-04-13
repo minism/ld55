@@ -4,6 +4,7 @@ import world from "../World";
 import Viewport from "@/game/renderer/Viewport";
 import OverlayGrid from "@/game/renderer/OverlayGrid";
 import WorldTile from "@/game/renderer/WorldTile";
+import gameConfig from "@/game/config/gameConfig";
 
 let _initted = false;
 
@@ -65,10 +66,9 @@ export default class GameRenderer {
   }
 
   private resize() {
-    const verticalPadding = 100;
     this.app.renderer.resize(
       window.innerWidth,
-      window.innerHeight - verticalPadding
+      window.innerHeight - gameConfig.gameViewVerticalPadding
     );
     this.viewport.centerOn(0, 0);
   }
