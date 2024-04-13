@@ -12,12 +12,12 @@ export default class Game {
 
     // Bootstrap the pixi app.
     const app = new Application();
-    await app.init({ background: "#002510", resizeTo: container });
+    await app.init({ background: "#311f11", resizeTo: container });
     container.innerHTML = ""; // hot-reloading workaround
     container.appendChild(app.canvas);
 
     // Setup the viewport/camera which serves as the base container.
-    const viewport = new Viewport();
+    const viewport = new Viewport(app.screen);
     app.stage.addChild(viewport);
 
     // Viewport dragging.
@@ -28,7 +28,7 @@ export default class Game {
     app.stage.on("pointermove", viewport.handlePointerMove.bind(viewport));
 
     // TEST
-    const tex = await getTexture("hexBase");
+    const tex = await getTexture("hexGrass");
 
     for (const hex of world.grid) {
       const spr = new Sprite(tex);
@@ -36,5 +36,8 @@ export default class Game {
       spr.y = hex.y;
       viewport.mainContainer.addChild(spr);
     }
+
+    // Start.
+    viewport.centerOn(0, 0);
   }
 }

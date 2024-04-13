@@ -3,6 +3,7 @@ import { Assets, Texture } from "pixi.js";
 const assetPaths = {
   flower: "/sprites/flower.png",
   hexBase: "/sprites/hex-base.png",
+  hexGrass: "/sprites/hex-grass.png",
 };
 
 export type AssetKey = keyof typeof assetPaths;

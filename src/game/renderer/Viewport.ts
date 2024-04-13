@@ -1,4 +1,10 @@
-import { Application, Container, FederatedPointerEvent, Point } from "pixi.js";
+import {
+  Application,
+  Container,
+  FederatedPointerEvent,
+  Point,
+  Rectangle,
+} from "pixi.js";
 
 export default class Viewport extends Container {
   public mainContainer: Container;
@@ -7,7 +13,7 @@ export default class Viewport extends Container {
   private dragStart: Point | null = null;
   private positionStart: Point;
 
-  constructor() {
+  constructor(private screen: Rectangle) {
     super();
 
     this.positionStart = this.position;
@@ -36,5 +42,11 @@ export default class Viewport extends Container {
     const dy = event.global.y - this.dragStart.y;
     this.position.x = this.positionStart.x + dx;
     this.position.y = this.positionStart.y + dy;
+  }
+
+  // Focus the viewport such that the given point is in the center.
+  public centerOn(x: number, y: number) {
+    this.position.x = x + this.screen.width / 2;
+    this.position.y = y + this.screen.height / 2;
   }
 }

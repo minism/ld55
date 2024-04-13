@@ -1,4 +1,12 @@
-import { Grid, Hex, Orientation, defineHex, rectangle } from "honeycomb-grid";
+import {
+  Grid,
+  Hex,
+  HexCoordinates,
+  Orientation,
+  defineHex,
+  rectangle,
+  spiral,
+} from "honeycomb-grid";
 
 const GameHex = defineHex({
   dimensions: { width: 16, height: 16 },
@@ -12,7 +20,15 @@ class World {
   public readonly grid: Grid<Hex>;
 
   constructor() {
-    this.grid = new Grid(GameHex, rectangle({ width: 10, height: 10 }));
+    // Create a hex-shaped map.
+    const radius = 5;
+    this.grid = new Grid(
+      GameHex,
+      spiral({
+        start: [0, 0],
+        radius,
+      })
+    );
   }
 }
 
