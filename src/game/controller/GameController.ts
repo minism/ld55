@@ -1,8 +1,7 @@
-import GameRenderer from "@/game/renderer/GameRenderer";
+import { fetchGameState } from "@/game/db/db";
+import GameRenderer, { initGameRenderer } from "@/game/renderer/GameRenderer";
 import { createClient } from "@/supabase/client";
 import { RealtimeChannel } from "@supabase/supabase-js";
-
-let _initted = false;
 
 // Invariants for the game client.
 export interface GameClientProps {
@@ -35,20 +34,21 @@ export class GameController {
         // console.log("leave", key, leftPresences);
       })
       .subscribe();
+
+    // TODO: Setup postgres listeners here.
   }
 
   public async init() {
-    if (_initted) {
-      throw new Error("Shouldn't have initted GameController twice!");
-    }
-
-    // Setup the renderer.
-    const renderer = new GameRenderer();
-    await renderer.init(this.container);
+    // Load game state.
+    const game = await fetchGameState(this.clientProps.gameId);
+    console.dir(game);
 
     // Player init logic.
     this.presenceChannel.track({
       userId: this.clientProps.userId,
     });
+
+    // Setup the renderer.
+    const renderer = await initGameRenderer(this.container);
   }
 }

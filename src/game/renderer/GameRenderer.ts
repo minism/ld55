@@ -6,7 +6,17 @@ import OverlayGrid from "@/game/renderer/OverlayGrid";
 import WorldTile from "@/game/renderer/WorldTile";
 import gameConfig from "@/game/config/gameConfig";
 
-let _initted = false;
+let _renderer: GameRenderer | null = null;
+export async function initGameRenderer(container: HTMLElement) {
+  if (_renderer != null) {
+    console.warn("Not re-initializing GameRenderer, likely hot re loaded");
+    return _renderer;
+  }
+
+  _renderer = new GameRenderer();
+  await _renderer.init(container);
+  return _renderer;
+}
 
 export default class GameRenderer {
   private readonly app: Application;
@@ -18,10 +28,6 @@ export default class GameRenderer {
   }
 
   public async init(container: HTMLElement) {
-    if (_initted) {
-      throw new Error("Shouldn't have initted Game twice!");
-    }
-
     // BG Load stuff.
     const assetPromise = loadAllAssets();
 
@@ -61,8 +67,6 @@ export default class GameRenderer {
 
     // Other components.
     new OverlayGrid(this.viewport.rawContainer);
-
-    _initted = true;
   }
 
   private resize() {

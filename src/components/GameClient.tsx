@@ -5,7 +5,11 @@ import {
   GameClientProps,
   GameController,
 } from "@/game/controller/GameController";
+import { GameState } from "@/game/model/gameState";
 import { useEffect, useRef } from "react";
+
+const testState = new GameState();
+setInterval(() => testState.incr(), 100);
 
 export default function GameClient(props: GameClientProps) {
   const gameElement = useRef<HTMLDivElement | null>(null);
@@ -21,7 +25,7 @@ export default function GameClient(props: GameClientProps) {
   return (
     <div>
       <div ref={gameElement} />
-      <PlayerList />
+      <PlayerList gameState={testState} />
     </div>
   );
 }

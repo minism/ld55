@@ -57,7 +57,7 @@ export default async function Home() {
           return (
             <li key={game.id}>
               <a href={url}>
-                Game {game.id} from {game.user_profile.username}
+                Game {game.id} from {game.user_profile!.username}
               </a>
             </li>
           );
