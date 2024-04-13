@@ -16,10 +16,10 @@ export async function fetchGameState(gameId: string) {
       .eq("id", gameId)
       .single()
       .throwOnError()
-  ).data;
+  ).data!;
 }
 
-export async function fetchUsersForGame(game: Game) {
+export async function fetchPlayersForGame(game: Game) {
   return {
     host: (
       await supabase

@@ -1,13 +1,19 @@
+import { Game, UserProfile } from "@/game/db/types";
 import { makeAutoObservable } from "mobx";
 
 // Client game state representation.
+// For now we use makeAutoObserverable which is least code and also least
+// performant, but good to start with.
 export class GameState {
-  secondsPassed = 0;
-  constructor() {
+  host?: Player;
+  challenger?: Player;
+
+  constructor(public dbGame: Game) {
     makeAutoObservable(this);
   }
+}
 
-  incr() {
-    this.secondsPassed += 1;
-  }
+export interface Player {
+  profile: UserProfile;
+  connected: boolean;
 }

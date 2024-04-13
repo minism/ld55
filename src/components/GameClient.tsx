@@ -5,46 +5,33 @@ import {
   GameClientProps,
   GameController,
 } from "@/game/controller/GameController";
-import { GameState } from "@/game/model/gameState";
-import { useEffect, useRef } from "react";
-
-const testState = new GameState();
-setInterval(() => testState.incr(), 100);
+import { useEffect, useRef, useState } from "react";
 
 export default function GameClient(props: GameClientProps) {
   const gameElement = useRef<HTMLDivElement | null>(null);
+  const [gameController, setGameController] = useState<GameController | null>(
+    null
+  );
 
   useEffect(() => {
-    if (gameElement.current == null) {
-      return;
-    }
-    const controller = new GameController(props, gameElement.current);
-    controller.init();
+    (async function () {
+      if (gameElement.current == null) {
+        return;
+      }
+      const controller = new GameController(props, gameElement.current);
+      await controller.init();
+      setGameController(controller);
+    })();
   }, [gameElement]);
 
   return (
     <div>
       <div ref={gameElement} />
-      <PlayerList gameState={testState} />
+      {gameController?.state == null ? null : (
+        <>
+          <PlayerList gameState={gameController.state} />
+        </>
+      )}
     </div>
   );
 }
-
-// // Class component used to disable fast-refresh in nextjs, not sure if there is a better way.
-// export default class GameClient extends Component {
-//   gameElement: any;
-
-//   constructor(props: Props) {
-//     super(props);
-//     this.gameElement = createRef();
-//   }
-
-//   render() {
-//     return <div ref={this.gameElement} />;
-//   }
-
-//   componentDidMount() {
-//     const controller = new GameController(this.gameElement.current);
-//     controller.init();
-//   }
-// }

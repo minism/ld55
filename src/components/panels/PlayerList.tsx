@@ -1,6 +1,6 @@
 import FloatingPanel from "@/components/common/FloatingPanel";
 import gameConfig from "@/game/config/gameConfig";
-import { GameState } from "@/game/model/gameState";
+import { GameState, Player } from "@/game/model/gameState";
 import { observer } from "mobx-react-lite";
 
 interface Props {
@@ -8,12 +8,25 @@ interface Props {
 }
 
 function PlayerList(props: Props) {
+  const { host, challenger } = props.gameState;
+
+  function playerDiv(player?: Player) {
+    return player == null ? null : (
+      <div>
+        {player.profile.username} (
+        {player.connected ? "Connected" : "Disconnected"})
+      </div>
+    );
+  }
+
   return (
     <FloatingPanel
       top={gameConfig.gameViewVerticalPadding / 2 + gameConfig.panelPadding}
       right={gameConfig.panelPadding}
     >
-      <div>Players {props.gameState.secondsPassed}</div>
+      <div className="mb-2">Players</div>
+      {playerDiv(host)}
+      {playerDiv(challenger)}
     </FloatingPanel>
   );
 }
