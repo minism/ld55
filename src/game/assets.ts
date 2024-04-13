@@ -8,19 +8,22 @@ const assetPaths = {
 
 export type AssetKey = keyof typeof assetPaths;
 
-export async function loadAllAssetsBackground() {
+export async function loadAllAssets() {
   const urls = Object.values(assetPaths).map((path) => `/assets${path}`);
-  await Assets.backgroundLoad(urls);
+  Assets.init();
+
+  // Note we use this over Assets.backgroundLoad() since that doesn't seem to fill the cache.
+  return await Promise.all(urls.map((url) => Assets.load(url)));
 }
 
-export async function getAsset(key: AssetKey) {
+export function getAsset(key: AssetKey) {
   const path = assetPaths[key];
   const url = `/assets${path}`;
-  return await Assets.load(url);
+  return Assets.get(url);
 }
 
-export async function getTexture(key: AssetKey) {
-  const tex = (await getAsset(key)) as Texture;
+export function getTexture(key: AssetKey) {
+  const tex = getAsset(key) as Texture;
   tex.source.scaleMode = "nearest";
   return tex;
 }

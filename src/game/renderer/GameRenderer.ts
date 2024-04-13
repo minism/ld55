@@ -1,7 +1,9 @@
 import { Application, Rectangle, Sprite, Texture } from "pixi.js";
-import { getAsset, getTexture, loadAllAssetsBackground } from "../assets";
+import { getAsset, getTexture, loadAllAssets } from "../assets";
 import world from "../World";
 import Viewport from "@/game/renderer/Viewport";
+import OverlayGrid from "@/game/renderer/OverlayGrid";
+import WorldTile from "@/game/renderer/WorldTile";
 
 let _initted = false;
 
@@ -20,7 +22,7 @@ export default class GameRenderer {
     }
 
     // BG Load stuff.
-    await loadAllAssetsBackground();
+    const assetPromise = loadAllAssets();
 
     // Bootstrap the pixi app.
     await this.app.init({ background: "#311f11" });
@@ -31,6 +33,7 @@ export default class GameRenderer {
 
     // Setup the viewport/camera which serves as the base container.
     this.viewport = new Viewport(this.app.screen);
+    this.viewport.centerOn(0, 0);
     this.app.stage.addChild(this.viewport);
 
     // Viewport dragging.
@@ -49,18 +52,14 @@ export default class GameRenderer {
       this.viewport.handlePointerMove.bind(this.viewport)
     );
 
-    // TEST
-    const tex = await getTexture("hexGrass");
-
+    // Start renderer.
+    await assetPromise;
     for (const hex of world.grid) {
-      const spr = new Sprite(tex);
-      spr.x = hex.x;
-      spr.y = hex.y;
-      this.viewport.mainContainer.addChild(spr);
+      new WorldTile(this.viewport.mainContainer, hex);
     }
 
-    // Start.
-    this.viewport.centerOn(0, 0);
+    // Other components.
+    new OverlayGrid(this.viewport.rawContainer);
 
     _initted = true;
   }

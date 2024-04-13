@@ -1,3 +1,4 @@
+import gameConfig from "@/game/config/gameConfig";
 import {
   Application,
   Container,
@@ -19,9 +20,11 @@ export default class Viewport extends Container {
     this.positionStart = this.position;
 
     this.rawContainer = new Container({});
-    this.mainContainer = new Container({ scale: 3 });
-    this.addChild(this.rawContainer);
+    this.mainContainer = new Container({
+      scale: gameConfig.defaultRenderScale,
+    });
     this.addChild(this.mainContainer);
+    this.addChild(this.rawContainer);
   }
 
   public handlePointerDown(event: FederatedPointerEvent) {

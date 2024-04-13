@@ -17,3 +17,22 @@ export default function GameClient() {
 
   return <div ref={gameElement} />;
 }
+
+// // Class component used to disable fast-refresh in nextjs, not sure if there is a better way.
+// export default class GameClient extends Component {
+//   gameElement: any;
+
+//   constructor(props: Props) {
+//     super(props);
+//     this.gameElement = createRef();
+//   }
+
+//   render() {
+//     return <div ref={this.gameElement} />;
+//   }
+
+//   componentDidMount() {
+//     const controller = new GameController(this.gameElement.current);
+//     controller.init();
+//   }
+// }
