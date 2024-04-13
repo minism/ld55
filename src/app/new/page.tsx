@@ -7,6 +7,7 @@ export default async function NewGame() {
 
   const response = await supabase
     .from("game")
+    // @ts-expect-error: JSON type for state.
     .insert({ host_id: user.id, state: initialGameState() })
     .select("*")
     .single();
