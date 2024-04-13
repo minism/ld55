@@ -1,0 +1,5 @@
+Goals for day 1:
+
+- Simple map with 3 tile types (grass, water, forest)
+- 1x scale overlay grid
+- hero movement
