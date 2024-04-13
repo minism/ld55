@@ -11,7 +11,7 @@ export default class Game {
 
     // Bootstrap the pixi app.
     const app = new Application();
-    await app.init({ background: "#000000", resizeTo: container });
+    await app.init({ background: "#002510", resizeTo: container });
     container.innerHTML = ""; // hot-reloading workaround
     container.appendChild(app.canvas);
 

@@ -14,9 +14,5 @@ export default function GameContainer() {
     game.init(gameElement.current);
   }, [gameElement]);
 
-  return (
-    <div className="border-white border">
-      <div ref={gameElement} />
-    </div>
-  );
+  return <div className="flex-1" ref={gameElement} />;
 }
