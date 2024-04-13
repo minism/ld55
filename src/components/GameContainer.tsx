@@ -15,7 +15,7 @@ export default function GameContainer() {
   }, [gameElement]);
 
   return (
-    <div>
+    <div className="border-white border">
       <div ref={gameElement} />
     </div>
   );
