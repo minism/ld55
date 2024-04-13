@@ -4,11 +4,11 @@ import { GameModel, Player } from "@/game/model/gameModel";
 import { observer } from "mobx-react-lite";
 
 interface Props {
-  gameState: GameModel;
+  model: GameModel;
 }
 
 function PlayerList(props: Props) {
-  const { host, challenger } = props.gameState;
+  const { host, challenger } = props.model;
 
   function playerDiv(player: Player | null) {
     return player == null ? null : (
@@ -24,7 +24,7 @@ function PlayerList(props: Props) {
       top={gameConfig.gameViewVerticalPadding / 2 + gameConfig.panelPadding}
       right={gameConfig.panelPadding}
     >
-      <div className="mb-2">Players</div>
+      <div className="mb-2">Players (turn {props.model.state.turn})</div>
       {playerDiv(host)}
       {playerDiv(challenger)}
     </FloatingPanel>

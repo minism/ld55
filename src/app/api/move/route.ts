@@ -32,6 +32,7 @@ export async function POST(request: Request) {
     q: req.q,
     r: req.r,
   };
+  game.state.turn++;
   await updateGameState(game);
 
   return Response.json({});

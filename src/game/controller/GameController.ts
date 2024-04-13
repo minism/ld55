@@ -5,6 +5,7 @@ import {
   fetchPlayersForGame,
   provideSupabaseClient,
 } from "@/game/db/db";
+import { Game } from "@/game/db/types";
 import { EventLog } from "@/game/model/eventLog";
 import { GameModel } from "@/game/model/gameModel";
 import { TooltipModel } from "@/game/model/tooltipModel";
@@ -12,7 +13,7 @@ import { initGameRenderer } from "@/game/renderer/GameRenderer";
 import { createClient } from "@/supabase/client";
 import { RealtimeChannel, RealtimePresenceState } from "@supabase/supabase-js";
 import { Hex } from "honeycomb-grid";
-import { configure, reaction } from "mobx";
+import { configure, reaction, autorun } from "mobx";
 
 configure({
   enforceActions: "never",
@@ -30,6 +31,7 @@ export class GameController implements IGameEvents {
   public readonly tooltip: TooltipModel;
 
   private readonly presenceChannel: RealtimeChannel;
+  private readonly dbChannel: RealtimeChannel;
 
   constructor(
     private readonly clientProps: GameClientProps,
@@ -38,6 +40,7 @@ export class GameController implements IGameEvents {
     const supabase = createClient();
     provideSupabaseClient(supabase);
     this.presenceChannel = supabase.channel(`game-${clientProps.gameId}`);
+    this.dbChannel = supabase.channel("db-updates");
 
     // Create models
     this.eventLog = new EventLog();
@@ -65,15 +68,9 @@ export class GameController implements IGameEvents {
     // Setup the renderer.
     const renderer = await initGameRenderer(this.container, this, this.tooltip);
     this.eventLog.log("Initialized client view");
-    reaction(
-      () => this.model,
-      (model) => {
-        console.log("model");
-        if (model != null) {
-          renderer.update(model);
-        }
-      }
-    );
+    autorun(() => {
+      renderer.update(this.model!);
+    });
     renderer.update(this.model);
 
     // Setup supabase realtime event listeners.
@@ -81,6 +78,23 @@ export class GameController implements IGameEvents {
       .on("presence", { event: "sync" }, () => {
         this.handlePresenceSync(this.presenceChannel.presenceState());
       })
+      .subscribe();
+
+    this.dbChannel
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "game",
+          filter: `id=eq.${this.clientProps.gameId}`,
+        },
+        (payload) => {
+          // Typing issue here but it should be the same
+          // @ts-expect-error
+          this.handleDbGameUpdate(payload.new);
+        }
+      )
       .subscribe();
 
     // Player init logic.
@@ -135,6 +149,11 @@ export class GameController implements IGameEvents {
         };
       }
     }
+  }
+
+  private async handleDbGameUpdate(game: Game) {
+    this.eventLog.log(`Turn ${game.state.turn}`);
+    this.model!.dbGame = game;
   }
 
   public async handleClickWorldHex(hex: Hex) {
