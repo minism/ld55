@@ -1,7 +1,8 @@
-import { Assets } from "pixi.js";
+import { Assets, Texture } from "pixi.js";
 
 const assetPaths = {
   flower: "/sprites/flower.png",
+  hexBase: "/sprites/hex-base.png",
 };
 
 export type AssetKey = keyof typeof assetPaths;
@@ -15,4 +16,10 @@ export async function getAsset(key: AssetKey) {
   const path = assetPaths[key];
   const url = `/assets${path}`;
   return await Assets.load(url);
+}
+
+export async function getTexture(key: AssetKey) {
+  const tex = (await getAsset(key)) as Texture;
+  tex.source.scaleMode = "nearest";
+  return tex;
 }

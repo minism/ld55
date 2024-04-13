@@ -1,7 +1,7 @@
 import { Grid, Hex, Orientation, defineHex, rectangle } from "honeycomb-grid";
 
 const GameHex = defineHex({
-  dimensions: 30,
+  dimensions: { width: 16, height: 16 },
   orientation: Orientation.POINTY,
   origin: { x: 0, y: 0 },
   offset: -1,
@@ -13,7 +13,6 @@ class World {
 
   constructor() {
     this.grid = new Grid(GameHex, rectangle({ width: 10, height: 10 }));
-    this.grid.forEach(console.log);
   }
 }
 
