@@ -1,13 +1,40 @@
-import { Container, Rectangle } from "pixi.js";
+import { Application, Container, FederatedPointerEvent, Point } from "pixi.js";
 
 export default class Viewport extends Container {
-  constructor(screen: Rectangle) {
-    super();
-    this.eventMode = "static";
-    this.hitArea = screen;
+  public mainContainer: Container;
+  public rawContainer: Container; // Unscaled
 
-    this.on("pointerdown", (event) => {
-      console.dir(event);
-    });
+  private dragStart: Point | null = null;
+  private positionStart: Point;
+
+  constructor() {
+    super();
+
+    this.positionStart = this.position;
+
+    this.rawContainer = new Container({});
+    this.mainContainer = new Container({ scale: 3 });
+    this.addChild(this.rawContainer);
+    this.addChild(this.mainContainer);
+  }
+
+  public handlePointerDown(event: FederatedPointerEvent) {
+    this.positionStart = this.position.clone();
+    this.dragStart = new Point(event.global.x, event.global.y);
+  }
+
+  public handlePointerUp(event: FederatedPointerEvent) {
+    this.dragStart = null;
+  }
+
+  public handlePointerMove(event: FederatedPointerEvent) {
+    if (this.dragStart == null) {
+      return;
+    }
+
+    const dx = event.global.x - this.dragStart.x;
+    const dy = event.global.y - this.dragStart.y;
+    this.position.x = this.positionStart.x + dx;
+    this.position.y = this.positionStart.y + dy;
   }
 }

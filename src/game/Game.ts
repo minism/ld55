@@ -16,12 +16,16 @@ export default class Game {
     container.innerHTML = ""; // hot-reloading workaround
     container.appendChild(app.canvas);
 
-    // Setup stage / renderer.
-    // app.stage.scale = 3;
-
     // Setup the viewport/camera which serves as the base container.
-    const viewport = new Viewport(app.screen);
+    const viewport = new Viewport();
     app.stage.addChild(viewport);
+
+    // Viewport dragging.
+    app.stage.hitArea = app.screen;
+    app.stage.eventMode = "static";
+    app.stage.on("pointerdown", viewport.handlePointerDown.bind(viewport));
+    app.stage.on("pointerup", viewport.handlePointerUp.bind(viewport));
+    app.stage.on("pointermove", viewport.handlePointerMove.bind(viewport));
 
     // TEST
     const tex = await getTexture("hexBase");
@@ -30,7 +34,7 @@ export default class Game {
       const spr = new Sprite(tex);
       spr.x = hex.x;
       spr.y = hex.y;
-      viewport.addChild(spr);
+      viewport.mainContainer.addChild(spr);
     }
   }
 }
