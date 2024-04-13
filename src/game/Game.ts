@@ -1,6 +1,7 @@
 import { Application, Sprite, Texture } from "pixi.js";
 import { getAsset, getTexture, loadAllAssetsBackground } from "./assets";
 import world from "./World";
+import Viewport from "@/game/renderer/Viewport";
 
 export default class Game {
   constructor() {}
@@ -16,7 +17,11 @@ export default class Game {
     container.appendChild(app.canvas);
 
     // Setup stage / renderer.
-    app.stage.scale = 3;
+    // app.stage.scale = 3;
+
+    // Setup the viewport/camera which serves as the base container.
+    const viewport = new Viewport(app.screen);
+    app.stage.addChild(viewport);
 
     // TEST
     const tex = await getTexture("hexBase");
@@ -25,7 +30,7 @@ export default class Game {
       const spr = new Sprite(tex);
       spr.x = hex.x;
       spr.y = hex.y;
-      app.stage.addChild(spr);
+      viewport.addChild(spr);
     }
   }
 }
