@@ -1,3 +1,4 @@
+import { GameState } from "@/game/db/gameState";
 import { Game, UserProfile } from "@/game/db/types";
 import { makeAutoObservable } from "mobx";
 
@@ -8,7 +9,7 @@ export class GameModel {
   host: Player | null = null;
   challenger: Player | null = null;
 
-  get state() {
+  get state(): GameState {
     return this.dbGame.state;
   }
 

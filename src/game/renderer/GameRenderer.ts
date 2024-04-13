@@ -1,5 +1,6 @@
 import {
   Application,
+  Container,
   FederatedPointerEvent,
   Rectangle,
   Sprite,
@@ -13,6 +14,7 @@ import WorldTile from "@/game/renderer/WorldTile";
 import gameConfig from "@/game/config/gameConfig";
 import { TooltipModel } from "@/game/model/tooltipModel";
 import { Hex } from "honeycomb-grid";
+import { GameModel } from "@/game/model/gameModel";
 
 let _renderer: GameRenderer | null = null;
 export async function initGameRenderer(
@@ -32,6 +34,8 @@ export async function initGameRenderer(
 export default class GameRenderer {
   private readonly app: Application;
   private viewport: Viewport;
+
+  private entityViews: Record<string, Sprite> = {};
 
   constructor(private readonly tooltip: TooltipModel) {
     this.app = new Application();
@@ -54,7 +58,7 @@ export default class GameRenderer {
     this.viewport.centerOn(0, 0);
     this.app.stage.addChild(this.viewport);
 
-    // Viewport dragging.
+    // Viewport events.
     this.app.stage.hitArea = this.app.screen;
     this.app.stage.eventMode = "static";
     this.app.stage.on(
@@ -78,6 +82,30 @@ export default class GameRenderer {
 
     // Other components.
     new OverlayGrid(this.viewport.rawContainer);
+  }
+
+  public update(model: GameModel) {
+    // Update entity rendering - retained-mode style.
+    for (const entity of model.state.entities) {
+      // TODO: Handle destroy.
+      if (!this.entityViews[entity.id]) {
+        this.entityViews[entity.id] = new Sprite();
+        this.viewport.mainContainer.addChild(this.entityViews[entity.id]);
+      }
+      const view = this.entityViews[entity.id];
+      view.texture = getTexture(entity.type);
+      const hex = world.grid.getHex([entity.tile.q, entity.tile.r]);
+      if (hex != null) {
+        console.dir(entity.tile);
+        console.dir(hex.origin);
+        view.position.x = hex.x;
+        view.position.y = hex.y;
+      } else {
+        throw new Error(
+          `Invalid tile for entity: (${entity.tile.q}, ${entity.tile.r}`
+        );
+      }
+    }
   }
 
   private resize() {

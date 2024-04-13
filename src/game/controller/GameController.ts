@@ -9,7 +9,7 @@ import { TooltipModel } from "@/game/model/tooltipModel";
 import { initGameRenderer } from "@/game/renderer/GameRenderer";
 import { createClient } from "@/supabase/client";
 import { RealtimeChannel, RealtimePresenceState } from "@supabase/supabase-js";
-import { configure } from "mobx";
+import { configure, reaction } from "mobx";
 
 configure({
   enforceActions: "never",
@@ -63,6 +63,16 @@ export class GameController {
     const renderer = await initGameRenderer(this.container, this.tooltip);
     this.eventLog.log("Initialized client view");
     this.eventLog.log(JSON.stringify(this.model.state));
+    reaction(
+      () => this.model,
+      (model) => {
+        console.log("model");
+        if (model != null) {
+          renderer.update(model);
+        }
+      }
+    );
+    renderer.update(this.model);
 
     // Setup supabase realtime event listeners.
     this.presenceChannel
