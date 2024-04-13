@@ -19,7 +19,7 @@ export default async function Game({ params }: { params: { id: string } }) {
       <div className="p-4">
         <h1 className="text-xl">Playing as {profile.username}</h1>
       </div>
-      <GameClient />
+      <GameClient gameId={data.id} userId={profile.id} />
     </main>
   );
 }

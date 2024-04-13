@@ -1,3 +1,4 @@
+import { Database } from "@/generated/database.types";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { configDotenv } from "dotenv";
 import { cookies } from "next/headers";
@@ -5,7 +6,7 @@ import { redirect } from "next/navigation";
 
 configDotenv();
 
-export const createClient = <T = any>() => {
+export const createClient = <T = Database>() => {
   const cookieStore = cookies();
 
   return createServerClient<T>(
@@ -39,7 +40,7 @@ export const createClient = <T = any>() => {
   );
 };
 
-export async function getAuthenticatedSupabaseOrRedirect<T = any>(
+export async function getAuthenticatedSupabaseOrRedirect<T = Database>(
   requireAdmin = false
 ) {
   // Lookup the user.
@@ -58,7 +59,7 @@ export async function getAuthenticatedSupabaseOrRedirect<T = any>(
     .throwOnError()
     .single();
 
-  return { supabase, user, profile };
+  return { supabase, user: user!, profile: profile! };
 }
 
 enum InitializeUserResult {

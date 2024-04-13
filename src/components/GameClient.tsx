@@ -1,19 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import GameRenderer from "../game/renderer/GameRenderer";
-import GameController from "@/game/controller/GameController";
-import FloatingPanel from "@/components/common/FloatingPanel";
 import PlayerList from "@/components/panels/PlayerList";
+import {
+  GameClientProps,
+  GameController,
+} from "@/game/controller/GameController";
+import { useEffect, useRef } from "react";
 
-export default function GameClient() {
+export default function GameClient(props: GameClientProps) {
   const gameElement = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (gameElement.current == null) {
       return;
     }
-    const controller = new GameController(gameElement.current);
+    const controller = new GameController(props, gameElement.current);
     controller.init();
   }, [gameElement]);
 
