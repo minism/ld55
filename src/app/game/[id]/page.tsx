@@ -1,4 +1,4 @@
-import GameContainer from "@/components/GameContainer";
+import GameClient from "@/components/GameClient";
 import { getAuthenticatedSupabaseOrRedirect } from "@/supabase/server";
 
 export default async function Game({ params }: { params: { id: string } }) {
@@ -19,7 +19,7 @@ export default async function Game({ params }: { params: { id: string } }) {
       <div className="p-4">
         <h1 className="text-xl">Playing as {profile.username}</h1>
       </div>
-      <GameContainer />
+      <GameClient />
     </main>
   );
 }

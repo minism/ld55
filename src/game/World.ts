@@ -20,8 +20,8 @@ class World {
   public readonly grid: Grid<Hex>;
 
   constructor() {
-    // Create a hex-shaped map.
-    const radius = 5;
+    // Create a hex-shaped map using spiral traverser.
+    const radius = 10;
     this.grid = new Grid(
       GameHex,
       spiral({

@@ -1,11 +1,11 @@
 import { Application, Rectangle, Sprite, Texture } from "pixi.js";
-import { getAsset, getTexture, loadAllAssetsBackground } from "./assets";
-import world from "./World";
+import { getAsset, getTexture, loadAllAssetsBackground } from "../assets";
+import world from "../World";
 import Viewport from "@/game/renderer/Viewport";
 
 let _initted = false;
 
-export default class Game {
+export default class GameRenderer {
   private readonly app: Application;
   private viewport: Viewport;
 
