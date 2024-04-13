@@ -4,9 +4,13 @@ import { makeAutoObservable } from "mobx";
 // Client game state representation.
 // For now we use makeAutoObserverable which is least code and also least
 // performant, but good to start with.
-export class GameState {
+export class GameModel {
   host: Player | null = null;
   challenger: Player | null = null;
+
+  get state() {
+    return this.dbGame.state;
+  }
 
   constructor(public dbGame: Game) {
     makeAutoObservable(this);

@@ -4,10 +4,16 @@ import {
   provideSupabaseClient,
 } from "@/game/db/db";
 import { EventLog } from "@/game/model/eventLog";
-import { GameState } from "@/game/model/gameState";
+import { GameModel } from "@/game/model/gameModel";
+import { TooltipModel } from "@/game/model/tooltipModel";
 import { initGameRenderer } from "@/game/renderer/GameRenderer";
 import { createClient } from "@/supabase/client";
 import { RealtimeChannel, RealtimePresenceState } from "@supabase/supabase-js";
+import { configure } from "mobx";
+
+configure({
+  enforceActions: "never",
+});
 
 // Invariants for the game client.
 export interface GameClientProps {
@@ -16,8 +22,9 @@ export interface GameClientProps {
 }
 
 export class GameController {
-  public state: GameState | null = null;
+  public model: GameModel | null = null;
   public readonly eventLog: EventLog;
+  public readonly tooltip: TooltipModel;
 
   private readonly presenceChannel: RealtimeChannel;
 
@@ -29,30 +36,33 @@ export class GameController {
     provideSupabaseClient(supabase);
     this.presenceChannel = supabase.channel(`game-${clientProps.gameId}`);
 
+    // Create models
     this.eventLog = new EventLog();
+    this.tooltip = new TooltipModel();
   }
 
   public async init() {
     // Init game state.
     const dbGame = await fetchGameState(this.clientProps.gameId);
-    this.state = new GameState(dbGame);
+    this.model = new GameModel(dbGame);
 
     // Init player state.
     const { host, challenger } = await fetchPlayersForGame(dbGame);
-    this.state.host = {
+    this.model.host = {
       profile: host,
       connected: false,
     };
     if (challenger != null) {
-      this.state.challenger = {
+      this.model.challenger = {
         profile: challenger,
         connected: false,
       };
     }
 
     // Setup the renderer.
-    const renderer = await initGameRenderer(this.container);
+    const renderer = await initGameRenderer(this.container, this.tooltip);
     this.eventLog.log("Initialized client view");
+    this.eventLog.log(JSON.stringify(this.model.state));
 
     // Setup supabase realtime event listeners.
     this.presenceChannel
@@ -68,7 +78,7 @@ export class GameController {
   }
 
   private async handlePresenceSync(presenceState: RealtimePresenceState<any>) {
-    if (this.state == null) {
+    if (this.model == null) {
       throw new Error("Must init game state before supabase presence");
     }
 
@@ -84,31 +94,31 @@ export class GameController {
       }
     }
 
-    if (this.state.host) {
-      const connected = connectedPlayers.has(this.state.host.profile.id);
-      if (connected != this.state.host.connected) {
+    if (this.model.host) {
+      const connected = connectedPlayers.has(this.model.host.profile.id);
+      if (connected != this.model.host.connected) {
         this.eventLog.log(
-          `${this.state.host.profile.username} ${
+          `${this.model.host.profile.username} ${
             connected ? "connected" : "disconnected"
           }`
         );
-        this.state.host = {
-          ...this.state.host,
+        this.model.host = {
+          ...this.model.host,
           connected,
         };
       }
     }
 
-    if (this.state.challenger) {
-      const connected = connectedPlayers.has(this.state.challenger.profile.id);
-      if (connected != this.state.challenger.connected) {
+    if (this.model.challenger) {
+      const connected = connectedPlayers.has(this.model.challenger.profile.id);
+      if (connected != this.model.challenger.connected) {
         this.eventLog.log(
-          `${this.state.challenger.profile.username} ${
+          `${this.model.challenger.profile.username} ${
             connected ? "connected" : "disconnected"
           }`
         );
-        this.state.challenger = {
-          ...this.state.challenger,
+        this.model.challenger = {
+          ...this.model.challenger,
           connected,
         };
       }

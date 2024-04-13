@@ -2,6 +2,7 @@
 
 import EventLogView from "@/components/panels/EventLogView";
 import PlayerList from "@/components/panels/PlayerList";
+import TooltipView from "@/components/panels/TooltipView";
 import {
   GameClientProps,
   GameController,
@@ -28,10 +29,11 @@ export default function GameClient(props: GameClientProps) {
   return (
     <div>
       <div ref={gameElement} />
-      {gameController?.state == null ? null : (
+      {gameController?.model == null ? null : (
         <>
-          <PlayerList gameState={gameController.state} />
+          <PlayerList gameState={gameController.model} />
           <EventLogView eventLog={gameController.eventLog} />
+          <TooltipView tooltip={gameController.tooltip} />
         </>
       )}
     </div>

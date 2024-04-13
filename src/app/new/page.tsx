@@ -1,3 +1,4 @@
+import { initialGameState } from "@/game/db/gameState";
 import { getAuthenticatedSupabaseOrRedirect } from "@/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -6,7 +7,7 @@ export default async function NewGame() {
 
   const response = await supabase
     .from("game")
-    .insert({ host_id: user.id })
+    .insert({ host_id: user.id, state: initialGameState() })
     .select("*")
     .single();
   if (response.error) {

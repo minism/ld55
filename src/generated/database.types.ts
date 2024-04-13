@@ -15,6 +15,7 @@ export type Database = {
           created_at: string
           host_id: string
           id: string
+          state: Json
           status: string
         }
         Insert: {
@@ -22,6 +23,7 @@ export type Database = {
           created_at?: string
           host_id: string
           id?: string
+          state: Json
           status?: string
         }
         Update: {
@@ -29,6 +31,7 @@ export type Database = {
           created_at?: string
           host_id?: string
           id?: string
+          state?: Json
           status?: string
         }
         Relationships: [

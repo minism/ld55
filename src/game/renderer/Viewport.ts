@@ -1,4 +1,7 @@
+import world from "@/game/World";
 import gameConfig from "@/game/config/gameConfig";
+import { TooltipModel } from "@/game/model/tooltipModel";
+import { Hex } from "honeycomb-grid";
 import {
   Application,
   Container,
@@ -14,7 +17,9 @@ export default class Viewport extends Container {
   private dragStart: Point | null = null;
   private positionStart: Point;
 
-  constructor(private screen: Rectangle) {
+  private lastHoveredHex: Hex | null = null;
+
+  constructor(private screen: Rectangle, private tooltip: TooltipModel) {
     super();
 
     this.positionStart = this.position;
@@ -37,6 +42,22 @@ export default class Viewport extends Container {
   }
 
   public handlePointerMove(event: FederatedPointerEvent) {
+    // Update tooltip.
+    const worldPoint = this.mainContainer.toLocal(event.global);
+    const hex = world.grid.pointToHex(worldPoint);
+
+    // Check if hex exists.
+    if (world.grid.hasHex(hex)) {
+      this.lastHoveredHex = hex;
+      this.tooltip.visible = true;
+      this.tooltip.positionX = event.global.x;
+      this.tooltip.positionY = event.global.y;
+      this.tooltip.text = `Tile (${hex.q},${hex.r})`;
+    } else {
+      this.tooltip.visible = false;
+    }
+
+    // Update dragging.
     if (this.dragStart == null) {
       return;
     }

@@ -1,7 +1,7 @@
 import { getTexture } from "@/game/assets";
 import gameConfig from "@/game/config/gameConfig";
 import { Hex } from "honeycomb-grid";
-import { Sprite, Container } from "pixi.js";
+import { Container, Sprite } from "pixi.js";
 
 export default class WorldTile {
   private readonly spr: Sprite;

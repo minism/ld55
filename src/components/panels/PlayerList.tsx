@@ -1,10 +1,10 @@
 import FloatingPanel from "@/components/common/FloatingPanel";
 import gameConfig from "@/game/config/gameConfig";
-import { GameState, Player } from "@/game/model/gameState";
+import { GameModel, Player } from "@/game/model/gameModel";
 import { observer } from "mobx-react-lite";
 
 interface Props {
-  gameState: GameState;
+  gameState: GameModel;
 }
 
 function PlayerList(props: Props) {
