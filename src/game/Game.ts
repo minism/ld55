@@ -1,5 +1,6 @@
 import { Application, Sprite } from "pixi.js";
 import { getAsset, loadAllAssetsBackground } from "./assets";
+import world from "./World";
 
 export default class Game {
   constructor() {}
@@ -13,7 +14,12 @@ export default class Game {
     container.appendChild(app.canvas);
 
     const tex = await getAsset("flower");
-    const spr = new Sprite(tex);
-    app.stage.addChild(spr);
+
+    for (const hex of world.grid) {
+      const spr = new Sprite(tex);
+      spr.x = hex.x;
+      spr.y = hex.y;
+      app.stage.addChild(spr);
+    }
   }
 }
