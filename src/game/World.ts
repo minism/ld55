@@ -1,12 +1,4 @@
-import {
-  Grid,
-  Hex,
-  HexCoordinates,
-  Orientation,
-  defineHex,
-  rectangle,
-  spiral,
-} from "honeycomb-grid";
+import { Grid, Hex, Orientation, defineHex, spiral } from "honeycomb-grid";
 
 const GameHex = defineHex({
   dimensions: { width: 16, height: 16 },

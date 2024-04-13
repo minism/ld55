@@ -94,6 +94,7 @@ export default class GameRenderer {
       }
       const view = this.entityViews[entity.id];
       view.texture = getTexture(entity.type);
+      view.anchor.set(0.5);
       const hex = world.grid.getHex([entity.tile.q, entity.tile.r]);
       if (hex != null) {
         console.dir(entity.tile);
