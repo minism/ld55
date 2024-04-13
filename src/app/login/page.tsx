@@ -14,16 +14,15 @@ export default async function Login() {
       // TODO: Errors.
     }
 
-    const response = await supabase.auth.signInAnonymously({
-      options: {
-        data: {
-          username,
-        },
-      },
-    });
+    const response = await supabase.auth.signInAnonymously();
     if (response.error) {
       return;
     }
+
+    await supabase.from("user_profile").insert({
+      id: response.data.user!.id,
+      username,
+    });
 
     // TODO: Next URL
     return redirect("/");

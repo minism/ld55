@@ -8,7 +8,7 @@ export default async function Home() {
   // Fetch games.
   const hostedGames = await supabase
     .from("game")
-    .select()
+    .select("*")
     .eq("host_id", user.id);
   if (hostedGames.error) {
     throw hostedGames.error;
@@ -28,7 +28,7 @@ export default async function Home() {
 
   const openGames = await supabase
     .from("game")
-    .select()
+    .select("*, user_profile!public_game_host_id_fkey (*)")
     .neq("host_id", user.id)
     .is("challenger_id", null);
 
@@ -56,7 +56,9 @@ export default async function Home() {
           const url = `/game/${game.id}`;
           return (
             <li key={game.id}>
-              <a href={url}>Game {game.id}</a>
+              <a href={url}>
+                Game {game.id} from {game.user_profile.username}
+              </a>
             </li>
           );
         })}

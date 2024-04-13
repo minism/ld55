@@ -1,8 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { User, createClient as createClientRaw } from "@supabase/supabase-js";
 import { configDotenv } from "dotenv";
 import { cookies } from "next/headers";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 
 configDotenv();
 
@@ -44,7 +43,7 @@ export async function getAuthenticatedSupabaseOrRedirect<T = any>(
   requireAdmin = false
 ) {
   // Lookup the user.
-  const supabase = createClient<T>(cookies());
+  const supabase = createClient<T>();
   const response = await supabase.auth.getUser();
   const user = response.data.user;
   if (user == null) {
@@ -52,8 +51,14 @@ export async function getAuthenticatedSupabaseOrRedirect<T = any>(
   }
 
   // Run user initialization logic.
+  const { data: profile } = await supabase
+    .from("user_profile")
+    .select()
+    .eq("id", user.id)
+    .throwOnError()
+    .single();
 
-  return { supabase, user };
+  return { supabase, user, profile };
 }
 
 enum InitializeUserResult {

@@ -1,4 +1,3 @@
-import GameContainer from "@/components/GameContainer";
 import { getAuthenticatedSupabaseOrRedirect } from "@/supabase/server";
 import { redirect } from "next/navigation";
 
