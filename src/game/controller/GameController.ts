@@ -52,14 +52,6 @@ export class GameController {
       .on("presence", { event: "sync" }, () => {
         this.handlePresenceSync(this.presenceChannel.presenceState());
       })
-
-      // We may be able to eliminate join/leave events if sync is sufficient.
-      .on("presence", { event: "join" }, ({ key, newPresences }) => {
-        // console.log("join", key, newPresences);
-      })
-      .on("presence", { event: "leave" }, ({ key, leftPresences }) => {
-        // console.log("leave", key, leftPresences);
-      })
       .subscribe();
 
     // Player init logic.
@@ -88,17 +80,21 @@ export class GameController {
       }
     }
 
+    console.log("Updated presence");
+    console.dir(connectedPlayers);
+
     if (this.state.host) {
-      this.state.host = {
+      this.state.setHost({
         ...this.state.host,
         connected: connectedPlayers.has(this.state.host.profile.id),
-      };
+      });
     }
     if (this.state.challenger) {
-      this.state.challenger = {
+      this.state.setChallenger({
         ...this.state.challenger,
         connected: connectedPlayers.has(this.state.challenger.profile.id),
-      };
+      });
     }
+    console.dir(this.state);
   }
 }

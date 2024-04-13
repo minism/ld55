@@ -5,11 +5,19 @@ import { makeAutoObservable } from "mobx";
 // For now we use makeAutoObserverable which is least code and also least
 // performant, but good to start with.
 export class GameState {
-  host?: Player;
-  challenger?: Player;
+  host: Player | null = null;
+  challenger: Player | null = null;
 
   constructor(public dbGame: Game) {
     makeAutoObservable(this);
+  }
+
+  public setHost(player: Player) {
+    this.host = player;
+  }
+
+  public setChallenger(player: Player) {
+    this.challenger = player;
   }
 }
 

@@ -10,7 +10,7 @@ interface Props {
 function PlayerList(props: Props) {
   const { host, challenger } = props.gameState;
 
-  function playerDiv(player?: Player) {
+  function playerDiv(player: Player | null) {
     return player == null ? null : (
       <div>
         {player.profile.username} (

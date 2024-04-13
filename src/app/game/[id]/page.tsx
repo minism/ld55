@@ -4,13 +4,22 @@ import { getAuthenticatedSupabaseOrRedirect } from "@/supabase/server";
 export default async function Game({ params }: { params: { id: string } }) {
   // Fetch the game.
   const { profile, supabase } = await getAuthenticatedSupabaseOrRedirect();
-  const { data, error } = await supabase
+  const { data: game, error } = await supabase
     .from("game")
     .select()
     .eq("id", params.id)
-    .single();
-  if (error != null) {
-    throw error;
+    .single()
+    .throwOnError();
+
+  // If there isn't an opponent yet and we're not the host, join the game.
+  if (game!.host_id != profile.id && game!.challenger_id == null) {
+    await supabase
+      .from("game")
+      .update({
+        challenger_id: profile.id,
+      })
+      .eq("id", game!.id)
+      .throwOnError();
   }
 
   return (
@@ -19,7 +28,7 @@ export default async function Game({ params }: { params: { id: string } }) {
       <div className="p-4">
         <h1 className="text-xl">Playing as {profile.username}</h1>
       </div>
-      <GameClient gameId={data.id} userId={profile.id} />
+      <GameClient gameId={game!.id} userId={profile.id} />
     </main>
   );
 }
