@@ -7,6 +7,7 @@ export default class OverlayGrid {
     const g = new Graphics().setStrokeStyle({
       width: 1,
       color: gameConfig.overlayGridColor,
+      alpha: 0.1,
     });
     container.addChild(g);
 

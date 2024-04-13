@@ -1,6 +1,6 @@
 const gameConfig = {
   tileSize: 16,
-  overlayGridColor: 0x4e7734,
+  overlayGridColor: 0xffffff,
   defaultRenderScale: 3,
   panelPadding: 16,
   gameViewVerticalPadding: 100,

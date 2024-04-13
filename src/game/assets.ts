@@ -4,6 +4,8 @@ const assetPaths = {
   flower: "/sprites/flower.png",
   hexBase: "/sprites/hex-base.png",
   hexGrass: "/sprites/hex-grass.png",
+  hexForest: "/sprites/hex-forest.png",
+  hexWater: "/sprites/hex-water.png",
 };
 
 export type AssetKey = keyof typeof assetPaths;
