@@ -14,5 +14,5 @@ export default function GameContainer() {
     game.init(gameElement.current);
   }, [gameElement]);
 
-  return <div className="flex-1" ref={gameElement} />;
+  return <div ref={gameElement} />;
 }
