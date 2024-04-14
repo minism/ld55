@@ -142,8 +142,19 @@ export class GameModel {
       .value();
   }
 
+  getSummonsForHex(hex: Hex) {
+    // TODO: Could optimize this but I doubt it will matter.
+    return _.chain(this.state.summons)
+      .filter((s) => s.tile.q == hex.q && s.tile.r == hex.r)
+      .value();
+  }
+
   hasEntityForHex(hex: Hex) {
     return this.getEntitiesForHex(hex).length > 0;
+  }
+
+  hasSummonForHex(hex: Hex) {
+    return this.getSummonsForHex(hex).length > 0;
   }
 
   // Clientside prediction routines.

@@ -210,6 +210,7 @@ export class GameController implements IGameEvents {
     )
       // Filter out occupied spaces.
       .filter((hex) => allowOccupiedTiles || !this.model.hasEntityForHex(hex))
+      .filter((hex) => allowOccupiedTiles || !this.model.hasSummonForHex(hex))
       .value();
     this.model.availableActionLocations = availableTiles;
   }

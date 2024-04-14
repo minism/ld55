@@ -10,10 +10,10 @@ interface Props {
 
 function EventLogView(props: Props) {
   const lines = props.eventLog.messages.map((m, i) => <div key={i}>{m}</div>);
-  const ref = useRef<HTMLDivElement | null>(null);
+  const endRef = useRef<HTMLDivElement | null>(null);
 
-  if (ref.current != null) {
-    ref.current.scrollTop = ref.current.scrollHeight;
+  if (endRef.current != null) {
+    endRef.current.scrollIntoView({ behavior: "smooth" });
   }
 
   return (
@@ -22,11 +22,9 @@ function EventLogView(props: Props) {
       bottom={gameConfig.gameViewVerticalPadding / 2 + gameConfig.panelPadding}
       right={gameConfig.panelPadding}
     >
-      <div
-        className="w-[350px] h-48 overflow-y-scroll hidden md:block"
-        ref={ref}
-      >
+      <div className="w-[350px] h-48 overflow-y-scroll hidden md:block">
         <div className="font-mono text-xs">{lines}</div>
+        <div ref={endRef} />
       </div>
     </FloatingPanel>
   );
