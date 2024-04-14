@@ -5,6 +5,7 @@ export interface GameState {
   turn: number;
   tiles: WorldTile[];
   entities: Record<string, Entity>;
+  nextEntityId: number;
 }
 
 export interface Entity {

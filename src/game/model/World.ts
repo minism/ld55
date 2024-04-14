@@ -20,16 +20,17 @@ const GameHex = defineHex({
 export default class World {
   public readonly grid: Grid<Hex>;
 
+  private readonly radius: number;
   private readonly tiles: Record<string, WorldTile> = {};
 
   constructor() {
     // Create a hex-shaped map using spiral traverser.
-    const radius = gameConfig.generation.worldSize;
+    this.radius = gameConfig.generation.worldSize;
     this.grid = new Grid(
       GameHex,
       spiral({
         start: [0, 0],
-        radius,
+        radius: this.radius,
       })
     );
 
@@ -81,6 +82,20 @@ export default class World {
 
   getAllTiles() {
     return Object.values(this.tiles);
+  }
+
+  findClosestTileType(start: Hex, tileType: TileType) {
+    for (const hex of this.grid.traverse(
+      spiral({
+        start,
+        radius: this.radius,
+      })
+    )) {
+      if (this.getTile(hex).type == tileType) {
+        return hex;
+      }
+    }
+    throw new Error("Unable to find a closest tile type!");
   }
 
   static key(hex: { q: number; r: number }) {

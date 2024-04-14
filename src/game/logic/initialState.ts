@@ -5,8 +5,9 @@ import { randomIntBetween } from "@/game/util/math";
 import { Hex, HexCoordinates, line, spiral } from "honeycomb-grid";
 import _ from "lodash";
 import { isDefined } from "../util/typescript";
+import { addEntity } from "@/game/logic/stateMutations";
 
-export function generateMapTiles(): GameState["tiles"] {
+export function generateWorld() {
   // Use a tmp world for generation
   const world = new World();
 
@@ -49,32 +50,44 @@ export function generateMapTiles(): GameState["tiles"] {
     world.updateTilesWithTraverser(t, limit, TileType.WATER);
   }
 
-  return world.getAllTiles();
+  return world;
 }
 
 export function initialGameState(): GameState {
-  return {
+  const world = generateWorld();
+
+  let state: GameState = {
     turn: 0,
-    tiles: generateMapTiles(),
-    entities: {
-      "1": {
-        id: 1,
-        type: "wizard",
-        tile: {
-          q: 4,
-          r: -8,
-        },
-        owner: true,
-      },
-      "2": {
-        id: 2,
-        type: "wizard",
-        tile: {
-          q: -4,
-          r: 8,
-        },
-        owner: false,
-      },
-    },
+    nextEntityId: 1,
+    tiles: world.getAllTiles(),
+    entities: {},
   };
+
+  // Place players on grass.
+  const hostStart = world.findClosestTileType(
+    new Hex([-5, 10]),
+    TileType.GRASS
+  );
+  const challengerStart = world.findClosestTileType(
+    new Hex([5, -10]),
+    TileType.GRASS
+  );
+  state = addEntity(state, {
+    owner: true,
+    type: "wizard",
+    tile: {
+      q: hostStart.q,
+      r: hostStart.r,
+    },
+  });
+  state = addEntity(state, {
+    owner: false,
+    type: "wizard",
+    tile: {
+      q: challengerStart.q,
+      r: challengerStart.r,
+    },
+  });
+
+  return state;
 }

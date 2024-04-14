@@ -1,8 +1,7 @@
 "use client";
 
 import { GameController } from "@/game/controller/GameController";
-import { generateMapTiles } from "@/game/logic/initialState";
-import World from "@/game/model/World";
+import { generateWorld } from "@/game/logic/initialState";
 import { initGameRenderer } from "@/game/renderer/GameRenderer";
 import { useEffect, useRef, useState } from "react";
 
@@ -23,7 +22,7 @@ export default function PreviewWorldClient() {
       renderer.update({
         // @ts-expect-error
         state: {
-          tiles: generateMapTiles(),
+          tiles: generateWorld().getAllTiles(),
         },
       });
     })();

@@ -7,7 +7,7 @@ const gameConfig = {
   gameViewVerticalPadding: 100,
 
   generation: {
-    worldSize: 15,
+    worldSize: 16,
     // forestPatchSizeMin: 4,
     // forestPatchSizeMax: 12,
     // waterPatchSizeMin: 3,
