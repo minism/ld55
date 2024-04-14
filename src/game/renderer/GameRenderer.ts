@@ -121,6 +121,8 @@ export default class GameRenderer {
         );
       }
     }
+
+    this.selectionIndicator?.update(model);
   }
 
   public getScreenPositionForHex(hex: Hex) {

@@ -8,28 +8,25 @@ export default class SelectionIndicator {
   private readonly g: Graphics;
 
   constructor(private readonly viewport: Viewport) {
-    this.g = new Graphics().setStrokeStyle({
+    const g = new Graphics().setStrokeStyle({
       width: 1,
       color: gameConfig.selectionColor,
       alpha: gameConfig.selectionAlpha,
     });
-    this.viewport.rawContainer.addChild(this.g);
+    this.viewport.rawContainer.addChild(g);
 
-    // let first: Point[] = [];
-    // for (const hex of emptyWorld.grid) {
-    //   const points = hex.corners.map(
-    //     (p) =>
-    //       new Point(
-    //         p.x * this.viewport.renderScale(),
-    //         p.y * this.viewport.renderScale()
-    //       )
-    //   );
-    //   if (first.length < 1) {
-    //     first = points;
-    //   }
-    //   g.stroke().poly(points);
-    // }
-    // g.stroke().poly(first);
+    const hex = emptyWorld.grid.getHex([0, 0])!;
+    const points = hex.corners.map(
+      (p) =>
+        new Point(
+          p.x * this.viewport.renderScale(),
+          p.y * this.viewport.renderScale()
+        )
+    );
+    g.stroke().poly(points);
+    g.stroke().poly(points);
+
+    this.g = g;
   }
 
   public update(model: GameModel) {
@@ -37,6 +34,11 @@ export default class SelectionIndicator {
       this.g.visible = false;
     } else {
       this.g.visible = true;
+      const hex = emptyWorld.grid.getHex(model.selectedEntity.tile);
+      if (hex != null) {
+        this.g.x = hex.x * this.viewport.renderScale();
+        this.g.y = hex.y * this.viewport.renderScale();
+      }
     }
   }
 }

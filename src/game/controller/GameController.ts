@@ -121,6 +121,7 @@ export class GameController implements IGameEvents {
    */
 
   private selectEntity(entity: Entity) {
+    this.log("Selected " + entity.id);
     this.model.selectedEntity = entity;
   }
 
@@ -203,33 +204,33 @@ export class GameController implements IGameEvents {
       return;
     }
 
-    // const entities = this.model.getEntitiesForHex(hex);
-    // // TODO: Handle multiple entities.
-    // if (entities.length < 1) {
-    //   return;
-    // }
-
-    // const entity = entities[0];
-    // if (!this.model.ownsEntity(entity)) {
-    //   // Ignore clicks on other entities for now.
-    //   return;
-    // }
-
-    // this.selectEntity(entity);
-
-    const entity = Object.values(this.model.state.entities).find((e) =>
-      this.model.ownsEntity(e)
-    );
-    console.dir(entity);
-    if (entity == null) {
+    const entities = this.model.getEntitiesForHex(hex);
+    // TODO: Handle multiple entities.
+    if (entities.length < 1) {
       return;
     }
 
-    await apiMove({
-      gameId: this.clientProps.gameId,
-      entityId: entity.id,
-      q: hex.q,
-      r: hex.r,
-    });
+    const entity = entities[0];
+    if (!this.model.ownsEntity(entity)) {
+      // Ignore clicks on other entities for now.
+      return;
+    }
+
+    this.selectEntity(entity);
+
+    // const entity = Object.values(this.model.state.entities).find((e) =>
+    //   this.model.ownsEntity(e)
+    // );
+    // console.dir(entity);
+    // if (entity == null) {
+    //   return;
+    // }
+
+    // await apiMove({
+    //   gameId: this.clientProps.gameId,
+    //   entityId: entity.id,
+    //   q: hex.q,
+    //   r: hex.r,
+    // });
   }
 }

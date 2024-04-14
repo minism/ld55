@@ -26,7 +26,7 @@ export default class Viewport extends Container {
   }
 
   public renderScale() {
-    return this.mainContainer.scale.x;
+    return gameConfig.defaultRenderScale;
   }
 
   public handlePointerDown(event: FederatedPointerEvent) {
