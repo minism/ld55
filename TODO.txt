@@ -24,14 +24,15 @@ x sprites
 x cards
 x main UI
 x deck logic
-- casting
+x casting
 - summon delay
 - actions per turn
 
 ui
 x library size
 x hand size
-- action log
+x action log
+- player colors
 
 logic
 - attacking

@@ -73,7 +73,11 @@ export function castCard(
 
   // Apply the card effect.
   if (cardDef.type == "mana") {
+    if (playerState.manaThisTurn) {
+      return state;
+    }
     playerState.maxMp++;
+    playerState.mp++;
     playerState.manaThisTurn = true;
   }
 

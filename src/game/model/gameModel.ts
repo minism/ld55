@@ -1,5 +1,6 @@
 import { Entity } from "@/game/db/gameState";
 import { DbGame, UserProfile } from "@/game/db/types";
+import { castCard } from "@/game/logic/stateMutations";
 import World from "@/game/model/World";
 import { Hex } from "honeycomb-grid";
 import _ from "lodash";
@@ -111,6 +112,13 @@ export class GameModel {
 
   hasEntityForHex(hex: Hex) {
     return this.getEntitiesForHex(hex).length > 0;
+  }
+
+  // Clientside prediction routines.
+
+  predictCast(cardIndex: number, q: number, r: number) {
+    // @ts-expect-error
+    this.dbGame.state = castCard(this.dbGame.state, cardIndex, q, r);
   }
 }
 

@@ -6,7 +6,7 @@ import {
   fetchPlayersForGame as fetchUserProfilesForGame,
   provideSupabaseClient,
 } from "@/game/db/db";
-import { Entity } from "@/game/db/gameState";
+import { Entity, TurnAction } from "@/game/db/gameState";
 import { DbGame } from "@/game/db/types";
 import { TileType } from "@/game/model/WorldTile";
 import { EventLog } from "@/game/model/eventLog";
@@ -39,6 +39,8 @@ export class GameController implements IGameEvents {
   private renderer: GameRenderer | null = null;
   private readonly presenceChannel: RealtimeChannel;
   private readonly dbChannel: RealtimeChannel;
+
+  private lastLoggedTurnActionIndex: number = -1;
 
   constructor(
     private readonly clientProps: GameClientProps,
@@ -111,6 +113,20 @@ export class GameController implements IGameEvents {
     this.eventLog.log(...args);
   }
 
+  private logTurnAction(action: TurnAction) {
+    const player = this.model.playerForTurn();
+    if (action.type == "draw") {
+      this.log(`${player?.profile.username} drew a card.`);
+    } else if (action.type == "cast") {
+      const cardDef = cardDefsByEntityId[action.actionEntityDefId!];
+      if (cardDef.type == "summon") {
+        this.log(`${player?.profile.username} started summoning something.`);
+      } else {
+        this.log(`${player?.profile.username} cast ${cardDef.name}.`);
+      }
+    }
+  }
+
   /**
    * Private logic routines
    */
@@ -135,6 +151,16 @@ export class GameController implements IGameEvents {
         .value();
       this.model.availableMoves = availableTiles;
     }
+  }
+
+  private async castWithPrediction(cardIndex: number, q: number, r: number) {
+    this.model.predictCast(cardIndex, q, r);
+    await apiCast({
+      gameId: this.model.dbGame.id,
+      cardIndex,
+      q: 0,
+      r: 0,
+    });
   }
 
   /**
@@ -194,15 +220,25 @@ export class GameController implements IGameEvents {
     const lastChallengerId = this.model.dbGame.challenger_id;
     this.model.dbGame = game;
 
+    // Fetch data if needed.
+    if (game.challenger_id != lastChallengerId) {
+      const profiles = await fetchUserProfilesForGame(game);
+      this.model.provideUserProfiles(profiles);
+    }
+
+    // Turn message.
     if (game.state.turn > lastTurn) {
       const player = this.model.playerForTurn();
       this.log("");
       this.log(`[Turn ${game.state.turn} - ${player?.profile.username}]`);
+      this.lastLoggedTurnActionIndex = -1;
     }
 
-    if (game.challenger_id != lastChallengerId) {
-      const profiles = await fetchUserProfilesForGame(game);
-      this.model.provideUserProfiles(profiles);
+    // Action message.
+    if (game.state.turnActions.length > this.lastLoggedTurnActionIndex + 1) {
+      this.lastLoggedTurnActionIndex = game.state.turnActions.length - 1;
+      const action = game.state.turnActions[this.lastLoggedTurnActionIndex];
+      this.logTurnAction(action);
     }
   }
 
@@ -265,20 +301,26 @@ export class GameController implements IGameEvents {
   }
 
   public handleTryCast(cardIndex: number): boolean {
+    if (!this.model.isOurTurn()) {
+      // this.model.flashMessage = "Can't cast on oppone"
+      return false;
+    }
+
     const cardDef = cardDefsByEntityId[this.model.getOurHand()[cardIndex]];
     if (cardDef.cost > this.model.getOurPlayerState().mp) {
       this.model.flashMessage = "Not enough mana";
       return false;
     }
 
-    apiCast({
-      gameId: this.model.dbGame.id,
-      cardIndex,
-      q: 0,
-      r: 0,
-      // q: hex.q,
-      // r: hex.r,
-    });
+    if (cardDef.type == "mana") {
+      if (this.model.getOurPlayerState().manaThisTurn) {
+        this.model.flashMessage = "Already cast mana crystal this turn";
+        return false;
+      }
+
+      this.castWithPrediction(cardIndex, 0, 0);
+      return false;
+    }
 
     return true;
   }
