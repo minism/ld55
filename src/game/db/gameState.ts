@@ -50,6 +50,7 @@ export interface PlayerState {
 export interface TurnAction {
   type: "draw" | "cast" | "attack";
   actionEntityDefId?: string;
+  targetEntityDefId?: string;
   tile?: TilePosition;
 }
 

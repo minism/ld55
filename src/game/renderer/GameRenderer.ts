@@ -3,6 +3,7 @@ import gameConfig from "@/game/config/gameConfig";
 import { IGameEvents } from "@/game/controller/IGameEvents";
 import World, { emptyWorld } from "@/game/model/World";
 import { GameModel } from "@/game/model/gameModel";
+import AvailableAttackIndicator from "@/game/renderer/AvailableAttackIndicator";
 import AvailableCastIndicator from "@/game/renderer/AvailableCastIndicator";
 import AvailableMoveIndicator from "@/game/renderer/AvailableMoveIndicator";
 import EntityView from "@/game/renderer/EntityView";
@@ -103,6 +104,7 @@ export default class GameRenderer {
       new SelectionIndicator(this.viewport),
       new AvailableMoveIndicator(this.viewport),
       new AvailableCastIndicator(this.viewport),
+      new AvailableAttackIndicator(this.viewport),
       new SummonIndicator(this.viewport),
     ];
   }

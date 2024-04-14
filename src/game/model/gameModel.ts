@@ -2,6 +2,7 @@ import { EntityDef } from "@/game/data/entityDefs";
 import { Entity } from "@/game/db/gameState";
 import { DbGame, UserProfile } from "@/game/db/types";
 import {
+  attackEntity,
   castCard,
   moveEntity,
   summonEntity,
@@ -28,6 +29,7 @@ export class GameModel {
   selectedSummon: EntityDef | null = null;
   selectedSpell: EntityDef | null = null;
   availableActionLocations: Hex[] = []; // Relevant for move/summon/cast.
+  availableAttackLocations: Hex[] = [];
   flashMessage: string = "";
 
   constructor(dbGame: DbGame, ourUserId: string) {
@@ -72,6 +74,11 @@ export class GameModel {
   playerForTurn() {
     const hostsTurn = this.state.turn % 2 == 1;
     return hostsTurn ? this.host : this.challenger;
+  }
+
+  opponentForTurn() {
+    const hostsTurn = this.state.turn % 2 == 1;
+    return hostsTurn ? this.challenger : this.host;
   }
 
   isOurTurn() {
@@ -140,6 +147,11 @@ export class GameModel {
   }
 
   // Clientside prediction routines.
+
+  predictAttack(entityId: number, q: number, r: number) {
+    // @ts-expect-error
+    this.dbGame.state = attackEntity(this.dbGame.state, entityId, q, r);
+  }
 
   predictMove(entityId: number, q: number, r: number) {
     // @ts-expect-error

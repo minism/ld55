@@ -92,12 +92,7 @@ export default class World {
   }
 
   findClosestTileType(start: Hex, tileType: TileType) {
-    for (const hex of this.grid.traverse(
-      spiral({
-        start,
-        radius: this.radius,
-      })
-    )) {
+    for (const hex of this.allNeighbors(start, this.radius)) {
       if (this.getTile(hex).type == tileType) {
         return hex;
       }
@@ -107,18 +102,26 @@ export default class World {
 
   findNeighborsMatching(start: Hex, radius: number, tileTypes: Set<TileType>) {
     const ret = new Array<Hex>();
-    for (const hex of this.grid.traverse(
-      spiral({
-        start,
-        radius: radius,
-      })
-    )) {
+    for (const hex of this.allNeighbors(start, radius)) {
       if (hex.equals(start)) {
         continue;
       }
       if (tileTypes.has(this.getTile(hex).type)) {
         ret.push(hex);
       }
+    }
+    return ret;
+  }
+
+  allNeighbors(start: Hex, radius: number) {
+    const ret = new Array<Hex>();
+    for (const hex of this.grid.traverse(
+      spiral({
+        start,
+        radius: radius,
+      })
+    )) {
+      ret.push(hex);
     }
     return ret;
   }

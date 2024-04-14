@@ -1,3 +1,7 @@
+export async function apiAttack(req: any) {
+  return apiRequest(req, "/api/attack");
+}
+
 export async function apiMove(req: any) {
   return apiRequest(req, "/api/move");
 }

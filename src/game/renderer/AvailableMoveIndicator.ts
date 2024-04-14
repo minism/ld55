@@ -21,6 +21,8 @@ export default class AvailableMoveIndicator extends GameView {
     }
 
     const g = new Graphics();
+    g.interactive = true;
+    g.cursor = "pointer";
     this.c.addChild(g);
     const polyPoints = wrapAroundPolyPoints(
       model.availableActionLocations.map((h) => h.corners)

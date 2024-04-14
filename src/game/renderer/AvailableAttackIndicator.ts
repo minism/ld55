@@ -4,7 +4,7 @@ import Viewport from "@/game/renderer/Viewport";
 import { wrapAroundPolyPoints } from "@/game/renderer/graphicsUtil";
 import { Container, Graphics } from "pixi.js";
 
-export default class AvailableCastIndicator extends GameView {
+export default class AvailableAttackIndicator extends GameView {
   private c: Container;
 
   constructor(viewport: Viewport) {
@@ -16,7 +16,10 @@ export default class AvailableCastIndicator extends GameView {
 
   public update(model: GameModel) {
     this.c.removeChildren();
-    if (model.selectedSummon == null && model.selectedSpell == null) {
+    if (
+      model.selectedEntity == null ||
+      model.availableAttackLocations.length < 1
+    ) {
       return;
     }
 
@@ -25,11 +28,11 @@ export default class AvailableCastIndicator extends GameView {
     g.cursor = "pointer";
     this.c.addChild(g);
     const polyPoints = wrapAroundPolyPoints(
-      model.availableActionLocations.map((h) => h.corners)
+      model.availableAttackLocations.map((h) => h.corners)
     );
     for (const points of polyPoints) {
       g.fill({
-        color: 0x6600ff,
+        color: 0xff0000,
         alpha: 0.5,
       }).poly(points);
     }

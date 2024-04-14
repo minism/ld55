@@ -29,6 +29,40 @@ export function removeEntity(state: GameState, entityId: number) {
   return state;
 }
 
+export function attackEntity(
+  state: GameState,
+  entityId: string,
+  q: number,
+  r: number
+) {
+  // TODO: Check owner.
+  // TODO: Check entity stacking.
+  const entity = state.entities[entityId];
+  const def = entityDefsById[entity.def];
+  if (entity.remainingActions < 1) {
+    return state;
+  }
+
+  const target = Object.values(state.entities).find(
+    (e) => e.tile.q == q && e.tile.r == r
+  );
+  if (target == null) {
+    return;
+  }
+
+  target.hp -= def.attack;
+  entity.remainingActions--;
+
+  state.turnActions.push({
+    type: "attack",
+    actionEntityDefId: entity.def,
+    targetEntityDefId: target.def,
+    tile: { q, r },
+  });
+
+  return state;
+}
+
 export function moveEntity(
   state: GameState,
   entityId: string,

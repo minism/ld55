@@ -1,5 +1,6 @@
-import { apiCast, apiMove } from "@/game/api";
+import { apiAttack, apiCast, apiMove } from "@/game/api";
 import { IGameEvents } from "@/game/controller/IGameEvents";
+import { cardDefsByEntityId } from "@/game/data/cardDefs";
 import { EntityDef, entityDefsById } from "@/game/data/entityDefs";
 import {
   fetchGameState,
@@ -13,12 +14,12 @@ import { EventLog } from "@/game/model/eventLog";
 import { GameModel } from "@/game/model/gameModel";
 import { TooltipModel } from "@/game/model/tooltipModel";
 import GameRenderer, { initGameRenderer } from "@/game/renderer/GameRenderer";
+import { capitalize } from "@/game/util/string";
 import { createClient } from "@/supabase/client";
 import { RealtimeChannel, RealtimePresenceState } from "@supabase/supabase-js";
 import { Hex } from "honeycomb-grid";
-import { autorun, configure } from "mobx";
 import _ from "lodash";
-import { cardDefsByEntityId } from "@/game/data/cardDefs";
+import { autorun, configure } from "mobx";
 
 configure({
   enforceActions: "never",
@@ -115,6 +116,7 @@ export class GameController implements IGameEvents {
 
   private logTurnAction(action: TurnAction) {
     const player = this.model.playerForTurn();
+    const opponent = this.model.opponentForTurn();
     if (action.type == "draw") {
       this.log(`${player?.profile.username} drew a card.`);
     } else if (action.type == "cast") {
@@ -124,6 +126,17 @@ export class GameController implements IGameEvents {
       } else {
         this.log(`${player?.profile.username} cast ${cardDef.name}.`);
       }
+    } else if (action.type == "attack") {
+      const sourceDef = entityDefsById[action.actionEntityDefId!];
+      const targetDef = entityDefsById[action.targetEntityDefId!];
+      const sourceName =
+        cardDefsByEntityId[sourceDef.id]?.name ?? capitalize(sourceDef.id);
+      const targetName =
+        cardDefsByEntityId[targetDef.id]?.name ?? capitalize(targetDef.id);
+
+      this.log(
+        `${player?.profile.username}'s ${sourceName} attacked ${opponent}'s ${targetName} for ${sourceDef.attack} damage.`
+      );
     }
   }
 
@@ -134,6 +147,7 @@ export class GameController implements IGameEvents {
   private selectEntity(entity: Entity) {
     this.model.selectedEntity = entity;
     this.model.availableActionLocations = [];
+    this.model.availableAttackLocations = [];
     const def = entityDefsById[entity.def];
 
     // Update available tiles.
@@ -144,6 +158,7 @@ export class GameController implements IGameEvents {
         new Set([TileType.GRASS, TileType.FOREST]),
         false /* allowOccupiedTiles */
       );
+      this.updateAttackLocations(new Hex(entity.tile), def.range ?? 1);
     }
   }
 
@@ -177,6 +192,27 @@ export class GameController implements IGameEvents {
       .filter((hex) => allowOccupiedTiles || !this.model.hasEntityForHex(hex))
       .value();
     this.model.availableActionLocations = availableTiles;
+  }
+
+  private updateAttackLocations(origin: Hex, radius: number) {
+    // Start with traversable tiles.
+    const tiles = _.chain(this.model.world.allNeighbors(origin, radius))
+      .filter((hex) => {
+        const entity = this.model.getEntitiesForHex(hex)[0];
+        return entity != null && entity.owner !== this.model.areHost();
+      })
+      .value();
+    this.model.availableAttackLocations = tiles;
+  }
+
+  private async attackWithPrediction(entityId: number, q: number, r: number) {
+    this.model.predictAttack(entityId, q, r);
+    return await apiAttack({
+      gameId: this.model.dbGame.id,
+      entityId,
+      q,
+      r,
+    });
   }
 
   private async moveWithPrediction(entityId: number, q: number, r: number) {
@@ -311,6 +347,18 @@ export class GameController implements IGameEvents {
     const clickedOnAvailableLocation = this.model.availableActionLocations.find(
       (h) => h.equals(hex)
     );
+    const clickedOnAttackLocation = this.model.availableAttackLocations.find(
+      (h) => h.equals(hex)
+    );
+
+    // Try attacking.
+    if (
+      selectedEntity != null &&
+      selectedEntity.remainingActions > 0 &&
+      clickedOnAttackLocation
+    ) {
+      return this.attackWithPrediction(selectedEntity.id, hex.q, hex.r);
+    }
 
     // Try moving.
     if (
