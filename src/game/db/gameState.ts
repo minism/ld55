@@ -13,6 +13,8 @@ export interface Entity {
   type: "wizard";
   tile: TilePosition;
 
+  remainingActions: number;
+
   // Which player owns this entity. host = true, challenger = false
   owner: boolean;
 }

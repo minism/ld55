@@ -7,6 +7,7 @@ import {
 } from "@/game/db/db";
 import { Entity } from "@/game/db/gameState";
 import { Game } from "@/game/db/types";
+import { TileType } from "@/game/model/WorldTile";
 import { EventLog } from "@/game/model/eventLog";
 import { GameModel } from "@/game/model/gameModel";
 import { TooltipModel } from "@/game/model/tooltipModel";
@@ -123,6 +124,16 @@ export class GameController implements IGameEvents {
   private selectEntity(entity: Entity) {
     this.log("Selected " + entity.id);
     this.model.selectedEntity = entity;
+
+    // Update available moves.
+    if (entity.remainingActions > 0) {
+      const availableTiles = this.model.world.findNeighborsMatching(
+        new Hex(entity.tile),
+        1,
+        new Set([TileType.GRASS, TileType.FOREST])
+      );
+      this.model.availableMoves = availableTiles;
+    }
   }
 
   /**
@@ -200,6 +211,8 @@ export class GameController implements IGameEvents {
   }
 
   public async handleClickWorldHex(hex: Hex) {
+    this.model.selectedEntity = null;
+
     if (!this.model.isOurTurn()) {
       return;
     }

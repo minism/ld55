@@ -102,6 +102,24 @@ export default class World {
     throw new Error("Unable to find a closest tile type!");
   }
 
+  findNeighborsMatching(start: Hex, radius: number, tileTypes: Set<TileType>) {
+    const ret = new Array<Hex>();
+    for (const hex of this.grid.traverse(
+      spiral({
+        start,
+        radius: radius,
+      })
+    )) {
+      if (hex.equals(start)) {
+        continue;
+      }
+      if (tileTypes.has(this.getTile(hex).type)) {
+        ret.push(hex);
+      }
+    }
+    return ret;
+  }
+
   applyRotationalSymmetry() {
     let test = 0;
     for (const hex of this.grid) {

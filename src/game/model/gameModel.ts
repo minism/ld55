@@ -18,6 +18,7 @@ export class GameModel {
   // Client-only state.
   readonly ourUserId: string;
   selectedEntity: Entity | null = null;
+  availableMoves: Hex[] = [];
 
   constructor(dbGame: Game, ourUserId: string) {
     this.dbGame = dbGame;

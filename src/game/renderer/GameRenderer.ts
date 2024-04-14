@@ -3,6 +3,7 @@ import gameConfig from "@/game/config/gameConfig";
 import { IGameEvents } from "@/game/controller/IGameEvents";
 import World, { emptyWorld } from "@/game/model/World";
 import { GameModel } from "@/game/model/gameModel";
+import AvailableMoveIndicator from "@/game/renderer/AvailableMoveIndicator";
 import GameView from "@/game/renderer/GameView";
 import OverlayGrid from "@/game/renderer/OverlayGrid";
 import SelectionIndicator from "@/game/renderer/SelectionIndicator";
@@ -95,6 +96,7 @@ export default class GameRenderer {
     this.otherViews = [
       new OverlayGrid(this.viewport),
       new SelectionIndicator(this.viewport),
+      new AvailableMoveIndicator(this.viewport),
     ];
   }
 

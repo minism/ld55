@@ -6,11 +6,12 @@ import { Entity, GameState } from "@/game/db/gameState";
 
 export function addEntity(
   state: GameState,
-  entity: Omit<Entity, "id">
+  entity: Omit<Entity, "id" | "remainingActions">
 ): GameState {
   const id = state.nextEntityId++;
   state.entities[id] = {
     id,
+    remainingActions: 2,
     ...entity,
   };
   return state;
