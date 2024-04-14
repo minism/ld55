@@ -1,6 +1,13 @@
 import gameConfig from "@/game/config/gameConfig";
 import { TileType, WorldTile } from "@/game/model/WorldTile";
-import { Grid, Hex, Orientation, defineHex, spiral } from "honeycomb-grid";
+import {
+  Grid,
+  Hex,
+  Orientation,
+  Traverser,
+  defineHex,
+  spiral,
+} from "honeycomb-grid";
 
 const GameHex = defineHex({
   dimensions: { width: 16, height: 16 },
@@ -36,6 +43,22 @@ export default class World {
           type: TileType.GRASS,
         })
     );
+  }
+
+  updateTilesWithTraverser(
+    traverser: Traverser<Hex>,
+    limit: number,
+    tileType: TileType
+  ) {
+    const iter = this.grid.traverse(traverser);
+    let i = 0;
+    for (const hex of iter) {
+      if (i++ > limit) {
+        return;
+      }
+
+      this.setTile(hex, tileType);
+    }
   }
 
   setAllTiles(tileType: TileType) {

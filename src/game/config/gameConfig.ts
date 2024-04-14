@@ -8,12 +8,10 @@ const gameConfig = {
 
   generation: {
     worldSize: 15,
-    numForestPatches: 3,
-    numWatcherPatches: 2,
-    forestPatchSizeMin: 4,
-    forestPatchSizeMax: 12,
-    waterPatchSizeMin: 3,
-    waterPatchSizeMax: 6,
+    // forestPatchSizeMin: 4,
+    // forestPatchSizeMax: 12,
+    // waterPatchSizeMin: 3,
+    // waterPatchSizeMax: 6,
   },
 };
 
