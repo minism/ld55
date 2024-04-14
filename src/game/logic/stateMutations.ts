@@ -71,7 +71,7 @@ export function attackEntity(
 
 export function moveEntity(
   state: GameState,
-  entityId: string,
+  entityId: number,
   q: number,
   r: number
 ) {
@@ -130,6 +130,7 @@ export function castCard(
 
   // Remove the card.
   handState.splice(cardIndex, 1);
+  playerState.mp -= cardDef.cost;
 
   // Apply the card effect.
   if (cardDef.type == "mana") {
@@ -141,6 +142,8 @@ export function castCard(
     playerState.manaThisTurn = true;
   } else if (cardDef.type == "summon") {
     state = summonEntity(state, cardDef.entityId, q, r);
+  } else if (cardDef.type == "spell") {
+    state = applySpell(state, cardDef.entityId, q, r);
   }
 
   // Log the action.
@@ -221,6 +224,36 @@ export function nextTurn(state: GameState) {
       });
       state.summons.splice(i, 1);
     }
+  }
+
+  return state;
+}
+
+function applySpell(
+  state: GameState,
+  entityDefId: string,
+  q: number,
+  r: number
+) {
+  const def = entityDefsById[entityDefId];
+  const isHostTurn = state.turn % 2 == 1;
+  const casterWizard = Object.values(state.entities).find(
+    (e) => e.owner == isHostTurn && e.def == "wizard"
+  );
+  if (casterWizard == null) {
+    throw new Error("Couldn't find caster wizard");
+  }
+
+  switch (def.id) {
+    case "magicMissile":
+      break;
+    case "blink":
+      return moveEntity(state, casterWizard.id, q, r);
+    case "heal":
+      // TODO
+      break;
+    default:
+      throw new Error(`Cast unknown spell: ${def.id}`);
   }
 
   return state;

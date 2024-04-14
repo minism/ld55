@@ -184,7 +184,19 @@ export class GameController implements IGameEvents {
     );
   }
 
-  private startSpell(entityDef: EntityDef) {}
+  private startSpell(entityDef: EntityDef) {
+    this.model.selectedSpell = entityDef;
+    this.model.availableActionLocations = [];
+    const wizard = this.model.getOurWizard();
+
+    // Update available tiles.
+    this.updateAvailableLocations(
+      new Hex(wizard.tile),
+      entityDef.moveSpeed,
+      new Set([TileType.GRASS, TileType.FOREST, TileType.WATER]),
+      true /* allowOccupiedTiles */
+    );
+  }
 
   private updateAvailableLocations(
     origin: Hex,
@@ -392,6 +404,11 @@ export class GameController implements IGameEvents {
 
     // Try casting.
     else if (selectedSpell != null && clickedOnAvailableLocation) {
+      return this.castWithPrediction(
+        this.model.selectedCardIndex,
+        hex.q,
+        hex.r
+      );
     }
 
     // Try selecting an entity.

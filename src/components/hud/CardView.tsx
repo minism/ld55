@@ -28,7 +28,12 @@ function PlayerView(props: Props) {
 
   const scale = isHovering ? 1.5 : 0.75;
 
-  const headerColor = card.type == "summon" ? "bg-sky-300" : "bg-purple-300";
+  const headerColor =
+    card.type == "summon"
+      ? "bg-sky-300"
+      : card.type == "spell"
+      ? "bg-fuchsia-300"
+      : "bg-gray-300";
 
   const entityDef = entityDefsById[card.entityId];
   const imageUrl = getAssetUrl(entityDef.sprite);
