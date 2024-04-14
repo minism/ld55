@@ -153,6 +153,16 @@ export class GameController implements IGameEvents {
     }
   }
 
+  private async moveWithPrediction(entityId: number, q: number, r: number) {
+    this.model.predictMove(entityId, q, r);
+    return await apiMove({
+      gameId: this.model.dbGame.id,
+      entityId,
+      q,
+      r,
+    });
+  }
+
   private async castWithPrediction(cardIndex: number, q: number, r: number) {
     this.model.predictCast(cardIndex, q, r);
     await apiCast({
@@ -276,12 +286,7 @@ export class GameController implements IGameEvents {
       selectedEntity.remainingActions > 0 &&
       this.model.availableMoves.find((h) => h.equals(hex))
     ) {
-      return await apiMove({
-        gameId: this.model.dbGame.id,
-        entityId: selectedEntity.id,
-        q: hex.q,
-        r: hex.r,
-      });
+      return this.moveWithPrediction(selectedEntity.id, hex.q, hex.r);
     }
 
     // Lookup the entity.

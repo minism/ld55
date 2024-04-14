@@ -1,6 +1,6 @@
 import { Entity } from "@/game/db/gameState";
 import { DbGame, UserProfile } from "@/game/db/types";
-import { castCard } from "@/game/logic/stateMutations";
+import { castCard, moveEntity } from "@/game/logic/stateMutations";
 import World from "@/game/model/World";
 import { Hex } from "honeycomb-grid";
 import _ from "lodash";
@@ -115,6 +115,11 @@ export class GameModel {
   }
 
   // Clientside prediction routines.
+
+  predictMove(entityId: number, q: number, r: number) {
+    // @ts-expect-error
+    this.dbGame.state = moveEntity(this.dbGame.state, entityId, q, r);
+  }
 
   predictCast(cardIndex: number, q: number, r: number) {
     // @ts-expect-error
