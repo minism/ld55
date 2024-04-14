@@ -28,6 +28,12 @@ const cardDefs: CardDef[] = [
     cost: 2,
   },
   {
+    entityId: "minotaur",
+    type: "summon",
+    name: "Minotaur",
+    cost: 2,
+  },
+  {
     entityId: "archer",
     type: "summon",
     name: "Elven Archer",

@@ -45,7 +45,7 @@ function PlayerView(props: Props) {
 
   return (
     <div
-      className="bg-slate-700 rounded-lg text-black border-2 border-lg border-white w-36 -mx-8 transition-all text-xs cursor-pointer"
+      className="bg-slate-700 rounded-lg text-black border-2 border-lg border-white w-36 -mx-8 transition-all text-xs cursor-pointer sele"
       style={{
         zIndex: isHovering ? 10 : 1,
         scale,

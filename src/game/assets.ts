@@ -9,6 +9,7 @@ const assetPaths = {
   wizard: "/sprites/wizard.png",
   jelly: "/sprites/jelly.png",
   golem: "/sprites/golem.png",
+  minotaur: "/sprites/minotaur.png",
   archer: "/sprites/archer.png",
   airElemental: "/sprites/air-elemental-2.png",
   magicMissile: "/sprites/magic-missile.png",
