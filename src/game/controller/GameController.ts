@@ -267,6 +267,7 @@ export class GameController implements IGameEvents {
   public handleTryCast(cardIndex: number): boolean {
     const cardDef = cardDefsByEntityId[this.model.getOurHand()[cardIndex]];
     if (cardDef.cost > this.model.getOurPlayerState().mp) {
+      this.model.flashMessage = "Not enough mana";
       return false;
     }
 

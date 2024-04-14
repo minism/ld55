@@ -19,6 +19,7 @@ export class GameModel {
   readonly ourUserId: string;
   selectedEntity: Entity | null = null;
   availableMoves: Hex[] = [];
+  flashMessage: string = "";
 
   constructor(dbGame: DbGame, ourUserId: string) {
     this.dbGame = dbGame;

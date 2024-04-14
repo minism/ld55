@@ -74,6 +74,7 @@ export function castCard(
   // Apply the card effect.
   if (cardDef.type == "mana") {
     playerState.maxMp++;
+    playerState.manaThisTurn = true;
   }
 
   // Log the action.
@@ -117,6 +118,7 @@ export function nextTurn(state: GameState) {
   // Refresh players.
   Object.values(state.playerStates).forEach((p) => {
     p.mp = p.maxMp;
+    p.manaThisTurn = false;
   });
 
   return state;

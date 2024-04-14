@@ -1,3 +1,4 @@
+import FlashMessageView from "@/components/hud/FlashMessageView";
 import GameActionsView from "@/components/hud/GameActionsView";
 import HandView from "@/components/hud/HandView";
 import PlayerView from "@/components/hud/PlayerView";
@@ -23,6 +24,7 @@ function GameHud(props: Props) {
       <PlayerView model={props.model} player={rightPlayer} left={false} />
       <SelectedEntityView model={props.model} />
       <HandView model={props.model} handler={props.handler} />
+      <FlashMessageView model={props.model} />
     </>
   );
 }

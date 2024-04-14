@@ -9,7 +9,7 @@ interface Props {
   model: GameModel;
 }
 
-function GameActionsView(props: Props) {
+function SelectedEntityView(props: Props) {
   const { model } = props;
 
   if (model.selectedEntity == null) {
@@ -33,4 +33,4 @@ function GameActionsView(props: Props) {
   );
 }
 
-export default observer(GameActionsView);
+export default observer(SelectedEntityView);

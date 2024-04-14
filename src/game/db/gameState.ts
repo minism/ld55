@@ -39,6 +39,7 @@ export interface PlayerState {
   mp: number;
   maxHp: number;
   maxMp: number;
+  manaThisTurn?: boolean;
 }
 
 export interface TurnAction {
