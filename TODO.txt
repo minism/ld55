@@ -22,14 +22,28 @@ x animate entity movements using pixi-tween
 
 x sprites
 x cards
+x main UI
 - deck logic
 - casting
 - actions per turn
+
+ui
+- library size
+- hand size
+
+logic
 - attacking
-- main UI
+- win con
+- library empty
+- forest movement
+
+polish
 - sound effects
 
 cards
 - summon turn time
 - mana per turn
 - summon mana crystal
+
+website
+- redirect login next URL

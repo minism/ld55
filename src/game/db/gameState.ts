@@ -12,6 +12,14 @@ export interface GameState {
   };
 
   // Private player state which should eventually be secured.
+  decks: {
+    host: CardSet;
+    challenger: CardSet;
+  };
+  hands: {
+    host: CardSet;
+    challenger: CardSet;
+  };
 }
 
 export interface Entity {
@@ -29,3 +37,6 @@ export interface PlayerState {
   hp: number;
   mp: number;
 }
+
+// Cards referenced by entity IDs.
+export type CardSet = string[];

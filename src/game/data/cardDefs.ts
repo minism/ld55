@@ -10,7 +10,7 @@ export interface CardDef {
 
 const cardDefs: CardDef[] = [
   {
-    entityId: "manaCrystal",
+    entityId: "mana",
     type: "mana",
     name: "Mana Crystal",
     cost: 0,

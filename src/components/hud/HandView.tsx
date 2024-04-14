@@ -10,15 +10,7 @@ interface Props {
 function PlayerView(props: Props) {
   const { model } = props;
 
-  const hand = [
-    cardDefsByEntityId["jelly"],
-    cardDefsByEntityId["golem"],
-    cardDefsByEntityId["archer"],
-    cardDefsByEntityId["airElemental"],
-    cardDefsByEntityId["magicMissile"],
-    cardDefsByEntityId["blink"],
-    cardDefsByEntityId["heal"],
-  ];
+  const hand = model.getOurHand().map((id) => cardDefsByEntityId[id]);
 
   const cardViews = hand.map((c, i) => (
     <CardView key={i} card={c} position={i} totalCards={hand.length} />

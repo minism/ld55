@@ -1,4 +1,5 @@
 import GameClient from "@/components/GameClient";
+import { startGame } from "@/game/logic/stateMutations";
 import { getAuthenticatedSupabaseOrRedirect } from "@/supabase/server";
 
 export default async function Game({ params }: { params: { id: string } }) {
@@ -19,13 +20,16 @@ export default async function Game({ params }: { params: { id: string } }) {
 
   // If there isn't an opponent yet and we're not the host, join the game.
   if (game!.host_id != profile!.id && game!.challenger_id == null) {
+    // Transition to start game state
+    // @ts-expect-error
+    const state = startGame(game!.state);
+
     await supabase
       .from("game")
       .update({
         challenger_id: profile!.id,
-
-        // We need to update state to not break replication updates.
-        state: game!.state,
+        // @ts-expect-error
+        state,
       })
       .eq("id", game!.id)
       .throwOnError();

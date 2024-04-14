@@ -3,7 +3,7 @@ import { ApiGameContext } from "@/server/apiContext";
 export function isRequestersTurn(context: ApiGameContext) {
   const { user, game } = context;
   const activePlayerId =
-    game.state.turn % 2 == 0 ? game.host_id : game.challenger_id;
+    game.state.turn % 2 == 1 ? game.host_id : game.challenger_id;
   return activePlayerId === user.id;
 }
 

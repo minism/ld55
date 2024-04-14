@@ -51,16 +51,24 @@ export class GameModel {
   }
 
   playerForTurn() {
-    const hostsTurn = this.state.turn % 2 == 0;
+    const hostsTurn = this.state.turn % 2 == 1;
     return hostsTurn ? this.host : this.challenger;
   }
 
   isOurTurn() {
-    const hostsTurn = this.state.turn % 2 == 0;
+    const hostsTurn = this.state.turn % 2 == 1;
     return (
       this.hasGameStarted() &&
       ((hostsTurn && this.areHost()) || (!hostsTurn && this.areChallenger()))
     );
+  }
+
+  getOurHand() {
+    return this.areHost()
+      ? this.state.hands.host
+      : this.areChallenger()
+      ? this.state.hands.challenger
+      : [];
   }
 
   ownsEntity(entity: Entity) {

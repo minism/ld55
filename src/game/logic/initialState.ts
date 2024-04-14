@@ -1,4 +1,4 @@
-import { GameState } from "@/game/db/gameState";
+import { CardSet, GameState } from "@/game/db/gameState";
 import World from "@/game/model/World";
 import { TileType } from "@/game/model/WorldTile";
 import { randomIntBetween } from "@/game/util/math";
@@ -7,6 +7,7 @@ import _ from "lodash";
 import { isDefined } from "../util/typescript";
 import { addEntity } from "@/game/logic/stateMutations";
 import gameConfig from "@/game/config/gameConfig";
+import { DeckDef, standardDeck } from "@/game/data/deckDefs";
 
 export function generateWorld() {
   // Use a tmp world for generation
@@ -57,6 +58,16 @@ export function generateWorld() {
   return world;
 }
 
+export function resolveDeck(deckDef: DeckDef) {
+  const deck: CardSet = [];
+  for (const cardDef of deckDef.cards) {
+    for (let i = 0; i < cardDef.copies; i++) {
+      deck.push(cardDef.cardEntityId);
+    }
+  }
+  return deck;
+}
+
 export function initialGameState(): GameState {
   const world = generateWorld();
 
@@ -71,6 +82,14 @@ export function initialGameState(): GameState {
         hp: gameConfig.maxPlayerHealth,
         mp: 1,
       },
+    },
+    decks: {
+      host: _.shuffle(resolveDeck(standardDeck)),
+      challenger: _.shuffle(resolveDeck(standardDeck)),
+    },
+    hands: {
+      host: [],
+      challenger: [],
     },
     tiles: world.getAllTiles(),
     nextEntityId: 1,
