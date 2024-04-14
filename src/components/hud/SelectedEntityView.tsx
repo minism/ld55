@@ -26,11 +26,12 @@ function SelectedEntityView(props: Props) {
       left={gameConfig.panelPadding}
     >
       <div className="h-48 min-w-48">
-        <div>Actions left: {entity.remainingActions}</div>
         <div>
           HP: {entity.hp} / {def.hp}
         </div>
-        <div>Move speed: {def.moveSpeed}</div>
+        <div>Attack power: {def.attack}</div>
+        <div>Moves left: {entity.remainingMoves}</div>
+        <div>Attacks left: {entity.remainingAttacks}</div>
       </div>
     </FloatingPanel>
   );

@@ -1,6 +1,7 @@
 import { cardDefsByEntityId } from "@/game/data/cardDefs";
 import { entityDefsById } from "@/game/data/entityDefs";
 import { Entity, GameState } from "@/game/db/gameState";
+import { TilePosition } from "@/game/model/WorldTile";
 import _ from "lodash";
 
 // Note we don't use immutable data structures here but we still take in and
@@ -16,7 +17,8 @@ export function addEntity(
   const id = state.nextEntityId++;
   state.entities[id] = {
     id,
-    remainingActions: 1,
+    remainingMoves: 1,
+    remainingAttacks: 1,
     def: defId,
     hp: def.hp,
     ...data,
@@ -36,22 +38,19 @@ export function attackEntity(
   r: number
 ) {
   // TODO: Check owner.
-  // TODO: Check entity stacking.
   const entity = state.entities[entityId];
   const def = entityDefsById[entity.def];
-  if (entity.remainingActions < 1) {
+  if (entity.remainingAttacks < 1) {
     return state;
   }
 
-  const target = Object.values(state.entities).find(
-    (e) => e.tile.q == q && e.tile.r == r
-  );
+  const target = entityForTile(state, q, r);
   if (target == null) {
     return;
   }
 
   target.hp -= def.attack;
-  entity.remainingActions--;
+  entity.remainingAttacks--;
 
   state.turnActions.push({
     type: "attack",
@@ -59,6 +58,13 @@ export function attackEntity(
     targetEntityDefId: target.def,
     tile: { q, r },
   });
+
+  // Check death.
+  if (target.hp < 1) {
+    state = killEntity(state, target.id);
+  }
+
+  // TODO: Check win-con.
 
   return state;
 }
@@ -70,13 +76,18 @@ export function moveEntity(
   r: number
 ) {
   // TODO: Check owner.
-  // TODO: Check entity stacking.
   const entity = state.entities[entityId];
-  if (entity.remainingActions < 1) {
+  if (entity.remainingMoves < 1) {
     return state;
   }
+
+  const occupant = entityForTile(state, q, r);
+  if (occupant != null) {
+    return state;
+  }
+
   entity.tile = { q, r };
-  entity.remainingActions--;
+  entity.remainingMoves--;
 
   // state.turnActions.push({
   //   type: "move",
@@ -84,6 +95,16 @@ export function moveEntity(
   //   tile: { q, r },
   // });
 
+  return state;
+}
+
+export function killEntity(state: GameState, entityId: number) {
+  const entity = state.entities[entityId];
+  state.turnActions.push({
+    type: "kill",
+    targetEntityDefId: entity.def,
+  });
+  delete state.entities[entityId];
   return state;
 }
 
@@ -172,9 +193,17 @@ export function nextTurn(state: GameState) {
     state = drawCards(state, 1, isHostTurn);
   }
 
+  // Cull any dead entities, stopgap for bugs.
+  for (const entity of Object.values(state.entities)) {
+    if (entity.hp < 1) {
+      state = killEntity(state, entity.id);
+    }
+  }
+
   // Refresh entities.
   Object.values(state.entities).forEach((e) => {
-    e.remainingActions = 1;
+    e.remainingMoves = 1;
+    e.remainingAttacks = 1;
   });
 
   // Refresh players.
@@ -208,4 +237,10 @@ function drawCards(state: GameState, count: number, host: boolean) {
   state.turnActions.push({ type: "draw" });
 
   return state;
+}
+
+function entityForTile(state: GameState, q: number, r: number) {
+  return Object.values(state.entities).find(
+    (e) => e.tile.q == q && e.tile.r == r
+  );
 }

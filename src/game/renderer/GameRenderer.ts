@@ -116,13 +116,18 @@ export default class GameRenderer {
     }
 
     // Update entity rendering - retained-mode style.
+    const staleViewIds = new Set(Object.keys(this.entityViews));
     for (const [id, entity] of Object.entries(model.state.entities)) {
-      // TODO: Handle destroy.
+      staleViewIds.delete(id);
       if (!this.entityViews[id]) {
         this.entityViews[id] = new EntityView();
         this.viewport.mainContainer.addChild(this.entityViews[id]);
       }
       this.entityViews[id].update(entity, entity.owner == model.areHost());
+    }
+    for (const staleId of staleViewIds) {
+      this.viewport.mainContainer.removeChild(this.entityViews[staleId]);
+      delete this.entityViews[staleId];
     }
 
     for (const view of this.otherViews) {

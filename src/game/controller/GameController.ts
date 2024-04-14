@@ -135,8 +135,13 @@ export class GameController implements IGameEvents {
         cardDefsByEntityId[targetDef.id]?.name ?? capitalize(targetDef.id);
 
       this.log(
-        `${player?.profile.username}'s ${sourceName} attacked ${opponent}'s ${targetName} for ${sourceDef.attack} damage.`
+        `${player?.profile.username}'s ${sourceName} attacked ${opponent?.profile.username}'s ${targetName} for ${sourceDef.attack} damage.`
       );
+    } else if (action.type == "kill") {
+      const targetDef = entityDefsById[action.targetEntityDefId!];
+      const targetName =
+        cardDefsByEntityId[targetDef.id]?.name ?? capitalize(targetDef.id);
+      this.log(`${opponent?.profile.username}'s ${targetName} was killed!`);
     }
   }
 
@@ -151,13 +156,16 @@ export class GameController implements IGameEvents {
     const def = entityDefsById[entity.def];
 
     // Update available tiles.
-    if (entity.remainingActions > 0) {
+    if (entity.remainingMoves > 0) {
       this.updateAvailableLocations(
         new Hex(entity.tile),
         def.moveSpeed,
         new Set([TileType.GRASS, TileType.FOREST]),
         false /* allowOccupiedTiles */
       );
+    }
+
+    if (entity.remainingAttacks > 0) {
       this.updateAttackLocations(new Hex(entity.tile), def.range ?? 1);
     }
   }
@@ -199,7 +207,7 @@ export class GameController implements IGameEvents {
     const tiles = _.chain(this.model.world.allNeighbors(origin, radius))
       .filter((hex) => {
         const entity = this.model.getEntitiesForHex(hex)[0];
-        return entity != null && entity.owner !== this.model.areHost();
+        return entity != null && !this.model.ownsEntity(entity);
       })
       .value();
     this.model.availableAttackLocations = tiles;
@@ -307,9 +315,13 @@ export class GameController implements IGameEvents {
     }
 
     // Action message.
-    if (game.state.turnActions.length > this.lastLoggedTurnActionIndex + 1) {
-      this.lastLoggedTurnActionIndex = game.state.turnActions.length - 1;
-      const action = game.state.turnActions[this.lastLoggedTurnActionIndex];
+    for (
+      let i = this.lastLoggedTurnActionIndex + 1;
+      i < game.state.turnActions.length;
+      i++
+    ) {
+      const action = game.state.turnActions[i];
+      this.lastLoggedTurnActionIndex = i;
       this.logTurnAction(action);
     }
   }
@@ -354,7 +366,7 @@ export class GameController implements IGameEvents {
     // Try attacking.
     if (
       selectedEntity != null &&
-      selectedEntity.remainingActions > 0 &&
+      selectedEntity.remainingAttacks > 0 &&
       clickedOnAttackLocation
     ) {
       return this.attackWithPrediction(selectedEntity.id, hex.q, hex.r);
@@ -363,7 +375,7 @@ export class GameController implements IGameEvents {
     // Try moving.
     if (
       selectedEntity != null &&
-      selectedEntity.remainingActions > 0 &&
+      selectedEntity.remainingMoves > 0 &&
       clickedOnAvailableLocation
     ) {
       return this.moveWithPrediction(selectedEntity.id, hex.q, hex.r);

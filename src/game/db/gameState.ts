@@ -33,7 +33,8 @@ export interface Entity {
   def: string;
   tile: TilePosition;
   hp: number;
-  remainingActions: number;
+  remainingMoves: number;
+  remainingAttacks: number;
 
   // Which player owns this entity. host = true, challenger = false
   owner: boolean;
@@ -48,7 +49,7 @@ export interface PlayerState {
 }
 
 export interface TurnAction {
-  type: "draw" | "cast" | "attack";
+  type: "draw" | "cast" | "attack" | "kill";
   actionEntityDefId?: string;
   targetEntityDefId?: string;
   tile?: TilePosition;
