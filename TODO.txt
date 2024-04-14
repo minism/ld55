@@ -18,7 +18,7 @@ logic
 x prevent entity stacking
 
 polish
-- animate entity movements using pixi-tween
+x animate entity movements using pixi-tween
 
 cards
 - summon turn time

@@ -8,6 +8,7 @@ const gameConfig = {
   panelPadding: 16,
   gameViewVerticalPadding: 0,
   tooltipTimeout: 50,
+  entityTweenTime: 0.1,
 
   generation: {
     worldSize: 16,
