@@ -211,8 +211,10 @@ export class GameController implements IGameEvents {
   }
 
   public async handleClickWorldHex(hex: Hex) {
+    // Ensure we always clear the selection.
     this.model.selectedEntity = null;
 
+    // No actions if its not our turn.
     if (!this.model.isOurTurn()) {
       return;
     }
