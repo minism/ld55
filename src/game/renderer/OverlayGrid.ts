@@ -1,4 +1,4 @@
-import world from "@/game/World";
+import world, { emptyWorld } from "@/game/model/World";
 import gameConfig from "@/game/config/gameConfig";
 import { Container, Graphics, Point } from "pixi.js";
 
@@ -7,12 +7,12 @@ export default class OverlayGrid {
     const g = new Graphics().setStrokeStyle({
       width: 1,
       color: gameConfig.overlayGridColor,
-      alpha: 0.1,
+      alpha: gameConfig.overlayGridAlpha,
     });
     container.addChild(g);
 
     let first: Point[] = [];
-    for (const hex of world.grid) {
+    for (const hex of emptyWorld.grid) {
       const points = hex.corners.map(
         (p) =>
           new Point(

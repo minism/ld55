@@ -4,10 +4,11 @@ import { GameModel } from "@/game/model/gameModel";
 import { TooltipModel } from "@/game/model/tooltipModel";
 import OverlayGrid from "@/game/renderer/OverlayGrid";
 import Viewport from "@/game/renderer/Viewport";
-import WorldTile from "@/game/renderer/WorldTile";
+import WorldTileView from "@/game/renderer/WorldTileView";
 import { Application, Rectangle, Sprite } from "pixi.js";
-import world from "../World";
-import { getTexture, loadAllAssets } from "../assets";
+import { getTexture, loadAllAssets } from "@/game/assets";
+import World, { emptyWorld } from "@/game/model/World";
+import _ from "lodash";
 
 let _renderer: GameRenderer | null = null;
 export async function initGameRenderer(
@@ -30,6 +31,7 @@ export default class GameRenderer {
   private viewport: Viewport;
 
   private entityViews: Record<string, Sprite> = {};
+  private worldTileViews: Record<string, WorldTileView> = {};
 
   constructor(
     private readonly handler: IGameEvents,
@@ -78,8 +80,14 @@ export default class GameRenderer {
 
     // Start renderer.
     await assetPromise;
-    for (const hex of world.grid) {
-      new WorldTile(this.viewport.mainContainer, hex);
+
+    // Initialize the world tiles based on an empty world.
+    this.worldTileViews = {};
+    for (const hex of emptyWorld.grid) {
+      this.worldTileViews[World.key(hex)] = new WorldTileView(
+        this.viewport.mainContainer,
+        hex
+      );
     }
 
     // Other components.
@@ -87,6 +95,11 @@ export default class GameRenderer {
   }
 
   public update(model: GameModel) {
+    // Update world tiles.
+    for (const tile of model.state.tiles) {
+      this.worldTileViews[World.key(tile.position)].update(tile);
+    }
+
     // Update entity rendering - retained-mode style.
     for (const [id, entity] of Object.entries(model.state.entities)) {
       // TODO: Handle destroy.
@@ -97,7 +110,7 @@ export default class GameRenderer {
       const view = this.entityViews[id];
       view.texture = getTexture(entity.type);
       view.anchor.set(0.5);
-      const hex = world.grid.getHex([entity.tile.q, entity.tile.r]);
+      const hex = model.world.grid.getHex([entity.tile.q, entity.tile.r]);
       if (hex != null) {
         view.position.x = hex.x;
         view.position.y = hex.y;

@@ -3,3 +3,17 @@ x 1x scale overlay grid
 x floating panel concept
 x player presence
 x turn based hero movement
+
+- spiral based procgen
+- game message floating panel
+- select move flow
+- extra dummy entity for each player
+- entity hover tooltip
+shared logical state mutation
+- scrollbar and fixed height for log
+- animate entity movements using pixi-tween
+
+cards
+- summon turn time
+- mana per turn
+- summon mana crystal

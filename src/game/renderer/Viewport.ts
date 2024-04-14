@@ -1,14 +1,8 @@
-import world from "@/game/World";
 import gameConfig from "@/game/config/gameConfig";
+import World, { emptyWorld } from "@/game/model/World";
 import { TooltipModel } from "@/game/model/tooltipModel";
 import { Hex } from "honeycomb-grid";
-import {
-  Application,
-  Container,
-  FederatedPointerEvent,
-  Point,
-  Rectangle,
-} from "pixi.js";
+import { Container, FederatedPointerEvent, Point, Rectangle } from "pixi.js";
 
 export default class Viewport extends Container {
   public mainContainer: Container;
@@ -44,10 +38,10 @@ export default class Viewport extends Container {
   public handlePointerMove(event: FederatedPointerEvent) {
     // Update tooltip.
     const worldPoint = this.mainContainer.toLocal(event.global);
-    const hex = world.grid.pointToHex(worldPoint);
+    const hex = emptyWorld.grid.pointToHex(worldPoint);
 
     // Check if hex exists.
-    if (world.grid.hasHex(hex)) {
+    if (emptyWorld.grid.hasHex(hex)) {
       this.hoveredWorldHex = hex;
       this.tooltip.visible = true;
       this.tooltip.positionX = event.global.x;
