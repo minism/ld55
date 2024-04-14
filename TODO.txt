@@ -36,20 +36,21 @@ x player colors
 
 logic
 x attacking
-- spell cast
-- win con
-- forest movement
-- water movements
-- random drops
-- library empty
 
 cards
 x summon turn time
 x mana per turn
 
-website
+last sprint
+- spell cast
+- win con
+- handle library empty
+- game over state in db
 - better join table
 - redirect login next URL
-
-polish
+- forest movement
+- water movements
+- random drops
+- better / smaller map
+- simple attack animation
 - sound effects
