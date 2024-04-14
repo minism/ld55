@@ -35,20 +35,21 @@ x action log
 x player colors
 
 logic
-- attacking
-- win con
-- library empty
+x attacking
 - spell cast
+- win con
 - forest movement
-- water movement
+- water movements
 - random drops
-
-polish
-- sound effects
+- library empty
 
 cards
 x summon turn time
 x mana per turn
 
 website
+- better join table
 - redirect login next URL
+
+polish
+- sound effects
