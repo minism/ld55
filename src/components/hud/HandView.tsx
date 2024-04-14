@@ -11,13 +11,13 @@ function PlayerView(props: Props) {
   const { model } = props;
 
   const hand = [
-    cardDefsByEntityId["bear"],
-    cardDefsByEntityId["bear"],
-    cardDefsByEntityId["bear"],
-    cardDefsByEntityId["bear"],
-    cardDefsByEntityId["bear"],
-    cardDefsByEntityId["bear"],
-    cardDefsByEntityId["bear"],
+    cardDefsByEntityId["jelly"],
+    cardDefsByEntityId["golem"],
+    cardDefsByEntityId["archer"],
+    cardDefsByEntityId["airElemental"],
+    cardDefsByEntityId["magicMissile"],
+    cardDefsByEntityId["blink"],
+    cardDefsByEntityId["heal"],
   ];
 
   const cardViews = hand.map((c, i) => (

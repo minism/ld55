@@ -7,7 +7,9 @@ export interface EntityDef {
   id: string;
   sprite: AssetKey;
   moveSpeed: number;
+  attack: number;
   hp: number;
+  range?: number;
 }
 
 const entityDefs: EntityDef[] = [
@@ -16,14 +18,41 @@ const entityDefs: EntityDef[] = [
     type: "wizard",
     sprite: "wizard",
     moveSpeed: 1,
+    attack: 0,
     hp: gameConfig.maxPlayerHealth,
   },
   {
-    id: "bear",
+    id: "jelly",
     type: "summon",
-    sprite: "bear",
+    sprite: "jelly",
     moveSpeed: 2,
+    attack: 1,
+    hp: 1,
+  },
+  {
+    id: "golem",
+    type: "summon",
+    sprite: "golem",
+    moveSpeed: 2,
+    attack: 2,
     hp: 2,
+  },
+  {
+    id: "archer",
+    type: "summon",
+    sprite: "archer",
+    moveSpeed: 2,
+    attack: 2,
+    hp: 2,
+    range: 2,
+  },
+  {
+    id: "airElemental",
+    type: "summon",
+    sprite: "airElemental",
+    moveSpeed: 3,
+    attack: 2,
+    hp: 4,
   },
 ];
 

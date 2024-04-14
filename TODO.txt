@@ -20,6 +20,13 @@ x prevent entity stacking
 polish
 x animate entity movements using pixi-tween
 
+x sprites
+- cards
+- deck logic
+- actions per turn
+- attacking
+- sound effects
+
 cards
 - summon turn time
 - mana per turn

@@ -7,7 +7,12 @@ const assetPaths = {
   hexForest: "/sprites/hex-forest.png",
   hexWater: "/sprites/hex-water.png",
   wizard: "/sprites/wizard.png",
-  bear: "/sprites/bear.png",
+  jelly: "/sprites/bear.png",
+  golem: "/sprites/bear.png",
+  archer: "/sprites/bear.png",
+  airElemental: "/sprites/air-elemental-2.png",
+  magicMissile: "/sprites/magic-missile.png",
+  summon: "/sprites/summon.png",
 };
 
 export type AssetKey = keyof typeof assetPaths;
