@@ -37,13 +37,14 @@ export class GameModel {
     const hostsTurn = this.state.turn % 2 == 0;
     return (
       this.hasGameStarted() &&
-      ((hostsTurn && this.areHost()) || (!hostsTurn && this.areOpponent()))
+      ((hostsTurn && this.areHost()) || (!hostsTurn && this.areChallenger()))
     );
   }
 
   ownsEntity(entity: Entity) {
     return (
-      (this.areHost() && entity.owner) || (this.areOpponent() && !entity.owner)
+      (this.areHost() && entity.owner) ||
+      (this.areChallenger() && !entity.owner)
     );
   }
 
@@ -51,12 +52,12 @@ export class GameModel {
     return this.dbGame.host_id == this.ourUserId;
   }
 
-  areOpponent() {
+  areChallenger() {
     return this.dbGame.challenger_id == this.ourUserId;
   }
 
   areSpectator() {
-    return !this.areHost() && !this.areOpponent();
+    return !this.areHost() && !this.areChallenger();
   }
 
   hasGameStarted() {

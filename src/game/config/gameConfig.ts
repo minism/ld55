@@ -6,7 +6,7 @@ const gameConfig = {
   overlayGridAlpha: 0.05,
   defaultRenderScale: 2,
   panelPadding: 16,
-  gameViewVerticalPadding: 100,
+  gameViewVerticalPadding: 0,
   tooltipTimeout: 50,
 
   generation: {

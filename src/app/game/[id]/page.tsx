@@ -29,11 +29,7 @@ export default async function Game({ params }: { params: { id: string } }) {
   }
 
   return (
-    // <main className="flex min-h-screen flex-col items-center justify-between p-24">
     <main className="flex min-h-screen flex-col">
-      <div className="p-4">
-        <h1 className="text-xl">Playing as {profile!.username}</h1>
-      </div>
       <GameClient gameId={game!.id} userId={profile!.id} />
     </main>
   );
