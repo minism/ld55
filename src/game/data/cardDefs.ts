@@ -14,6 +14,7 @@ const cardDefs: CardDef[] = [
     type: "mana",
     name: "Mana Crystal",
     cost: 0,
+    extraText: "Permanently gain 1 maximum MP",
   },
   {
     entityId: "jelly",

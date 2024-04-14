@@ -8,6 +8,7 @@ import { entityDefsById } from "@/game/data/entityDefs";
 import { getAssetUrl } from "@/game/assets";
 
 interface Props {
+  onClick: () => void;
   card: CardDef;
   position: number;
   totalCards: number;
@@ -45,7 +46,8 @@ function PlayerView(props: Props) {
 
   return (
     <div
-      className="bg-slate-700 rounded-lg text-black border-2 border-lg border-white w-36 -mx-8 transition-all text-xs cursor-pointer sele"
+      onClick={() => props.onClick()}
+      className="bg-slate-700 rounded-lg text-black border-2 border-lg border-white w-36 -mx-8 transition-all text-xs cursor-pointer select-none"
       style={{
         zIndex: isHovering ? 10 : 1,
         scale,

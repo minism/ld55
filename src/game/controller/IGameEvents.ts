@@ -5,4 +5,5 @@ export interface IGameEvents {
   handleClickWorldHex(hex: Hex): void;
   handleShowHexTooltip(hex: Hex): void;
   handleHideTooltip(): void;
+  handleTryCast(cardIndex: number): boolean;
 }

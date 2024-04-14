@@ -19,6 +19,22 @@ function PlayerView(props: Props) {
   if (player == null) {
     return null;
   }
+
+  // We should cleanup the host/challenger thing project-wide and just
+  // use player IDs.
+  const playerState =
+    player?.profile.id == model.dbGame.host_id
+      ? model.state.playerStates.host
+      : model.state.playerStates.challenger;
+  const playerHandSize =
+    player?.profile.id == model.dbGame.host_id
+      ? model.state.hands.host.length
+      : model.state.hands.challenger.length;
+  const playerDeckSize =
+    player?.profile.id == model.dbGame.host_id
+      ? model.state.decks.host.length
+      : model.state.decks.challenger.length;
+
   return (
     <FloatingPanel
       title={player?.profile.username}
@@ -28,8 +44,14 @@ function PlayerView(props: Props) {
       <div className="mb-4">
         Status: {player.connected ? "Connected" : "Disconnected"}
       </div>
-      <div>HP: </div>
-      <div>MP: </div>
+      <div>
+        HP: {playerState.hp} / {playerState.maxHp}
+      </div>
+      <div>
+        MP: {playerState.mp} / {playerState.maxMp}
+      </div>
+      <div>Hand: {playerHandSize}</div>
+      <div>Deck: {playerDeckSize}</div>
     </FloatingPanel>
   );
 }

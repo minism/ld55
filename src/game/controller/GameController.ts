@@ -1,4 +1,4 @@
-import { apiMove } from "@/game/api";
+import { apiCast, apiMove } from "@/game/api";
 import { IGameEvents } from "@/game/controller/IGameEvents";
 import { entityDefsById } from "@/game/data/entityDefs";
 import {
@@ -18,6 +18,7 @@ import { RealtimeChannel, RealtimePresenceState } from "@supabase/supabase-js";
 import { Hex } from "honeycomb-grid";
 import { autorun, configure } from "mobx";
 import _ from "lodash";
+import { cardDefsByEntityId } from "@/game/data/cardDefs";
 
 configure({
   enforceActions: "never",
@@ -261,5 +262,23 @@ export class GameController implements IGameEvents {
     }
 
     this.selectEntity(entity);
+  }
+
+  public handleTryCast(cardIndex: number): boolean {
+    const cardDef = cardDefsByEntityId[this.model.getOurHand()[cardIndex]];
+    if (cardDef.cost > this.model.getOurPlayerState().mp) {
+      return false;
+    }
+
+    apiCast({
+      gameId: this.model.dbGame.id,
+      cardIndex,
+      q: 0,
+      r: 0,
+      // q: hex.q,
+      // r: hex.r,
+    });
+
+    return true;
   }
 }

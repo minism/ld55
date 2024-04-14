@@ -76,11 +76,15 @@ export function initialGameState(): GameState {
     playerStates: {
       host: {
         hp: gameConfig.maxPlayerHealth,
-        mp: 1,
+        maxHp: gameConfig.maxPlayerHealth,
+        mp: 0,
+        maxMp: 0,
       },
       challenger: {
         hp: gameConfig.maxPlayerHealth,
-        mp: 1,
+        maxHp: gameConfig.maxPlayerHealth,
+        mp: 0,
+        maxMp: 0,
       },
     },
     decks: {
@@ -94,6 +98,7 @@ export function initialGameState(): GameState {
     tiles: world.getAllTiles(),
     nextEntityId: 1,
     entities: {},
+    turnActions: [],
   };
 
   // Place players on grass.

@@ -10,6 +10,7 @@ export interface GameState {
     host: PlayerState;
     challenger: PlayerState;
   };
+  turnActions: TurnAction[];
 
   // Private player state which should eventually be secured.
   decks: {
@@ -36,6 +37,14 @@ export interface Entity {
 export interface PlayerState {
   hp: number;
   mp: number;
+  maxHp: number;
+  maxMp: number;
+}
+
+export interface TurnAction {
+  type: "draw" | "cast" | "attack";
+  actionEntityDefId?: string;
+  tile?: TilePosition;
 }
 
 // Cards referenced by entity IDs.

@@ -71,6 +71,12 @@ export class GameModel {
       : [];
   }
 
+  getOurPlayerState() {
+    return this.areHost()
+      ? this.state.playerStates.host
+      : this.state.playerStates.challenger;
+  }
+
   ownsEntity(entity: Entity) {
     return (
       (this.areHost() && entity.owner) ||

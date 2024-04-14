@@ -1,19 +1,30 @@
 import CardView from "@/components/hud/CardView";
-import { cardDefsByEntityId } from "@/game/data/cardDefs";
+import { IGameEvents } from "@/game/controller/IGameEvents";
+import { CardDef, cardDefsByEntityId } from "@/game/data/cardDefs";
 import { GameModel } from "@/game/model/gameModel";
 import { observer } from "mobx-react-lite";
 
 interface Props {
   model: GameModel;
+  handler: IGameEvents;
 }
 
 function PlayerView(props: Props) {
   const { model } = props;
 
-  const hand = model.getOurHand().map((id) => cardDefsByEntityId[id]);
+  function handleClick(cardIndex: number) {
+    props.handler.handleTryCast(cardIndex);
+  }
 
+  const hand = model.getOurHand().map((id) => cardDefsByEntityId[id]);
   const cardViews = hand.map((c, i) => (
-    <CardView key={i} card={c} position={i} totalCards={hand.length} />
+    <CardView
+      key={i}
+      card={c}
+      position={i}
+      totalCards={hand.length}
+      onClick={() => handleClick(i)}
+    />
   ));
 
   return (

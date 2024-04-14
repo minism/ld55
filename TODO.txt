@@ -29,8 +29,9 @@ x deck logic
 - actions per turn
 
 ui
-- library size
-- hand size
+x library size
+x hand size
+- action log
 
 logic
 - attacking

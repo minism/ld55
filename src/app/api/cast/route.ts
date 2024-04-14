@@ -1,5 +1,5 @@
 import { updateGameState } from "@/game/db/db";
-import { moveEntity } from "@/game/logic/stateMutations";
+import { castCard, moveEntity } from "@/game/logic/stateMutations";
 import { fetchApiGameContext } from "@/server/apiContext";
 import { canRequesterAct } from "@/server/apiLogic";
 
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   const { game, req } = context;
 
   // @ts-expect-error: State fix
-  game.state = moveEntity(game.state, req.entityId, req.q, req.r);
+  game.state = castCard(game.state, req.cardIndex, req.q, req.r);
 
   await updateGameState(game);
 

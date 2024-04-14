@@ -31,7 +31,7 @@ export default function GameClient(props: GameClientProps) {
       <div ref={gameElement} />
       {gameController?.model == null ? null : (
         <>
-          <GameHud model={gameController.model} />
+          <GameHud model={gameController.model} handler={gameController} />
           <EventLogView eventLog={gameController.eventLog} />
           <TooltipView tooltip={gameController.tooltip} />
         </>
