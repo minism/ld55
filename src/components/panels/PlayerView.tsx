@@ -25,11 +25,11 @@ function PlayerView(props: Props) {
       top={gameConfig.gameViewVerticalPadding / 2 + gameConfig.panelPadding}
       {...position}
     >
-      Status: {player.connected ? "Connected" : "Disconnected"}
-      <div className="flex gap-2 items-center">
-        <div>HP: </div>
-        {/* <FillBar color="bg-red-500" amount={0.5} /> */}
+      <div className="mb-4">
+        Status: {player.connected ? "Connected" : "Disconnected"}
       </div>
+      <div>HP: </div>
+      <div>MP: </div>
     </FloatingPanel>
   );
 }

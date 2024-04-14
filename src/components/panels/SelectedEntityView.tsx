@@ -27,6 +27,7 @@ function GameActionsView(props: Props) {
     >
       <div className="h-48 min-w-48">
         <div>Moves left: {entity.remainingActions}</div>
+        <div>HP: {entity.hp}</div>
       </div>
     </FloatingPanel>
   );

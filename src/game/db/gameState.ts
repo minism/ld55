@@ -17,9 +17,8 @@ export interface GameState {
 export interface Entity {
   id: number;
   def: string;
-  type: "wizard" | "summon";
   tile: TilePosition;
-
+  hp: number;
   remainingActions: number;
 
   // Which player owns this entity. host = true, challenger = false

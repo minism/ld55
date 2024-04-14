@@ -1,3 +1,4 @@
+import { entityDefsById } from "@/game/data/entityDefs";
 import { Entity, GameState } from "@/game/db/gameState";
 import _ from "lodash";
 
@@ -7,13 +8,17 @@ import _ from "lodash";
 
 export function addEntity(
   state: GameState,
-  entity: Omit<Entity, "id" | "remainingActions">
+  defId: string,
+  data: Pick<Entity, "owner" | "tile">
 ): GameState {
+  const def = entityDefsById[defId];
   const id = state.nextEntityId++;
   state.entities[id] = {
     id,
     remainingActions: 1,
-    ...entity,
+    def: defId,
+    hp: def.hp,
+    ...data,
   };
   return state;
 }

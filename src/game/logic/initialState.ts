@@ -86,19 +86,15 @@ export function initialGameState(): GameState {
     new Hex([5, -10]),
     TileType.GRASS
   );
-  state = addEntity(state, {
+  state = addEntity(state, "wizard", {
     owner: true,
-    type: "wizard",
-    def: "wizard",
     tile: {
       q: hostStart.q,
       r: hostStart.r,
     },
   });
-  state = addEntity(state, {
+  state = addEntity(state, "wizard", {
     owner: false,
-    type: "wizard",
-    def: "wizard",
     tile: {
       q: challengerStart.q,
       r: challengerStart.r,
@@ -106,19 +102,15 @@ export function initialGameState(): GameState {
   });
 
   // Add some other example units.
-  state = addEntity(state, {
+  state = addEntity(state, "bear", {
     owner: true,
-    type: "summon",
-    def: "bear",
     tile: {
       q: hostStart.q + 1,
       r: hostStart.r + 1,
     },
   });
-  state = addEntity(state, {
+  state = addEntity(state, "bear", {
     owner: false,
-    type: "summon",
-    def: "bear",
     tile: {
       q: challengerStart.q + 1,
       r: challengerStart.r + 1,
