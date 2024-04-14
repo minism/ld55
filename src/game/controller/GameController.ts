@@ -5,6 +5,7 @@ import {
   fetchPlayersForGame,
   provideSupabaseClient,
 } from "@/game/db/db";
+import { Entity } from "@/game/db/gameState";
 import { Game } from "@/game/db/types";
 import { EventLog } from "@/game/model/eventLog";
 import { GameModel } from "@/game/model/gameModel";
@@ -26,7 +27,8 @@ export interface GameClientProps {
 }
 
 export class GameController implements IGameEvents {
-  public model: GameModel | null = null;
+  // @ts-expect-error: create a base state for this.
+  public model: GameModel;
   public readonly eventLog: EventLog;
   public readonly tooltip: TooltipModel;
 
@@ -68,7 +70,6 @@ export class GameController implements IGameEvents {
 
     // Setup the renderer.
     this.renderer = await initGameRenderer(this.container, this);
-    this.eventLog.log("Initialized client view");
     autorun(() => {
       this.renderer!.update(this.model!);
     });
@@ -102,7 +103,30 @@ export class GameController implements IGameEvents {
     this.presenceChannel.track({
       userId: this.clientProps.userId,
     });
+
+    // Initial status message.
+    if (this.model.hasGameStarted()) {
+      this.log(`Continuing game at turn ${this.model.state.turn}`);
+    } else {
+      this.log("Waiting for another player to join...");
+    }
   }
+
+  private log(...args: Parameters<(typeof EventLog)["prototype"]["log"]>) {
+    this.eventLog.log(...args);
+  }
+
+  /**
+   * Private logic routines
+   */
+
+  private selectEntity(entity: Entity) {
+    this.model.selectedEntity = entity;
+  }
+
+  /**
+   * EVENTS
+   */
 
   private async handlePresenceSync(presenceState: RealtimePresenceState<any>) {
     if (this.model == null) {
@@ -124,7 +148,7 @@ export class GameController implements IGameEvents {
     if (this.model.host) {
       const connected = connectedPlayers.has(this.model.host.profile.id);
       if (connected != this.model.host.connected) {
-        this.eventLog.log(
+        this.log(
           `${this.model.host.profile.username} ${
             connected ? "connected" : "disconnected"
           }`
@@ -139,7 +163,7 @@ export class GameController implements IGameEvents {
     if (this.model.challenger) {
       const connected = connectedPlayers.has(this.model.challenger.profile.id);
       if (connected != this.model.challenger.connected) {
-        this.eventLog.log(
+        this.log(
           `${this.model.challenger.profile.username} ${
             connected ? "connected" : "disconnected"
           }`
@@ -153,8 +177,8 @@ export class GameController implements IGameEvents {
   }
 
   private async handleDbGameUpdate(game: Game) {
-    this.eventLog.log(`Turn ${game.state.turn}`);
-    this.model!.dbGame = game;
+    this.log(`Turn ${game.state.turn}`);
+    this.model.dbGame = game;
   }
 
   public async handleShowHexTooltip(hex: Hex) {
@@ -166,26 +190,44 @@ export class GameController implements IGameEvents {
     this.tooltip.positionX = pos.x;
     this.tooltip.positionY = pos.y;
 
-    this.tooltip.tile = this.model!.world.getTile(hex);
-    this.tooltip.entities = this.model!.getEntitiesForHex(hex);
+    this.tooltip.tile = this.model.world.getTile(hex);
+    this.tooltip.entities = this.model.getEntitiesForHex(hex);
   }
 
-  public async handleHideTooltip() {
+  public handleHideTooltip() {
     this.tooltip.visible = false;
   }
 
   public async handleClickWorldHex(hex: Hex) {
-    // TODO: Refactor this part
-    const ourWizard = Object.values(this.model!.state.entities).find(
-      (e) => e.type == "wizard" && e.owner == this.model!.areHost
+    if (!this.model.isOurTurn()) {
+      return;
+    }
+
+    // const entities = this.model.getEntitiesForHex(hex);
+    // // TODO: Handle multiple entities.
+    // if (entities.length < 1) {
+    //   return;
+    // }
+
+    // const entity = entities[0];
+    // if (!this.model.ownsEntity(entity)) {
+    //   // Ignore clicks on other entities for now.
+    //   return;
+    // }
+
+    // this.selectEntity(entity);
+
+    const entity = Object.values(this.model.state.entities).find((e) =>
+      this.model.ownsEntity(e)
     );
-    if (ourWizard == null) {
-      throw new Error("no wizard for player?");
+    console.dir(entity);
+    if (entity == null) {
+      return;
     }
 
     await apiMove({
       gameId: this.clientProps.gameId,
-      entityId: ourWizard.id,
+      entityId: entity.id,
       q: hex.q,
       r: hex.r,
     });

@@ -4,6 +4,7 @@ import { IGameEvents } from "@/game/controller/IGameEvents";
 import World, { emptyWorld } from "@/game/model/World";
 import { GameModel } from "@/game/model/gameModel";
 import OverlayGrid from "@/game/renderer/OverlayGrid";
+import SelectionIndicator from "@/game/renderer/SelectionIndicator";
 import Viewport from "@/game/renderer/Viewport";
 import WorldTileView from "@/game/renderer/WorldTileView";
 import { Hex } from "honeycomb-grid";
@@ -28,6 +29,7 @@ export default class GameRenderer {
   private readonly app: Application;
   private viewport: Viewport;
 
+  private selectionIndicator: SelectionIndicator | null = null;
   private entityViews: Record<string, Sprite> = {};
   private worldTileViews: Record<string, WorldTileView> = {};
   private tooltipTimer: ReturnType<typeof setTimeout> | null = null;
@@ -90,6 +92,7 @@ export default class GameRenderer {
 
     // Other components.
     new OverlayGrid(this.viewport.rawContainer);
+    this.selectionIndicator = new SelectionIndicator(this.viewport);
   }
 
   public update(model: GameModel) {

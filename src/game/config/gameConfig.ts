@@ -1,5 +1,7 @@
 const gameConfig = {
   tileSize: 16,
+  selectionColor: 0x33ff33,
+  selectionAlpha: 0.5,
   overlayGridColor: 0xffffff,
   overlayGridAlpha: 0.05,
   defaultRenderScale: 2,

@@ -5,7 +5,7 @@ x player presence
 x turn based hero movement
 
 x spiral based procgen
-- entity hover tooltip
+x entity hover tooltip
 - select move flow
 - game message floating panel
 - extra dummy entity for each player
