@@ -10,7 +10,8 @@ export interface GameState {
 
 export interface Entity {
   id: number;
-  type: "wizard";
+  def: string;
+  type: "wizard" | "summon";
   tile: TilePosition;
 
   remainingActions: number;

@@ -16,6 +16,15 @@ const GameHex = defineHex({
   offset: -1,
 });
 
+// Create a hex-shaped map using spiral traverser.
+export const worldGrid = new Grid(
+  GameHex,
+  spiral({
+    start: [0, 0],
+    radius: gameConfig.generation.worldSize,
+  })
+);
+
 // Hex grid world representation.
 export default class World {
   public readonly grid: Grid<Hex>;
@@ -26,13 +35,7 @@ export default class World {
   constructor() {
     // Create a hex-shaped map using spiral traverser.
     this.radius = gameConfig.generation.worldSize;
-    this.grid = new Grid(
-      GameHex,
-      spiral({
-        start: [0, 0],
-        radius: this.radius,
-      })
-    );
+    this.grid = worldGrid;
 
     this.grid.forEach(
       (h) =>
@@ -144,4 +147,5 @@ export default class World {
 
 // Use an empty world to init stuff, but this is a little messy, better would
 // be an actual empty game state.
+// TODO: Eliminate this in favor of worldGrid
 export const emptyWorld = new World();

@@ -1,9 +1,10 @@
-import { getTexture, loadAllAssets } from "@/game/assets";
+import { loadAllAssets } from "@/game/assets";
 import gameConfig from "@/game/config/gameConfig";
 import { IGameEvents } from "@/game/controller/IGameEvents";
 import World, { emptyWorld } from "@/game/model/World";
 import { GameModel } from "@/game/model/gameModel";
 import AvailableMoveIndicator from "@/game/renderer/AvailableMoveIndicator";
+import EntityView from "@/game/renderer/EntityView";
 import GameView from "@/game/renderer/GameView";
 import OverlayGrid from "@/game/renderer/OverlayGrid";
 import SelectionIndicator from "@/game/renderer/SelectionIndicator";
@@ -31,7 +32,7 @@ export default class GameRenderer {
   private readonly app: Application;
   private viewport: Viewport;
 
-  private entityViews: Record<string, Sprite> = {};
+  private entityViews: Record<string, EntityView> = {};
   private worldTileViews: Record<string, WorldTileView> = {};
   private otherViews: GameView[] = [];
   private tooltipTimer: ReturnType<typeof setTimeout> | null = null;
@@ -110,21 +111,10 @@ export default class GameRenderer {
     for (const [id, entity] of Object.entries(model.state.entities)) {
       // TODO: Handle destroy.
       if (!this.entityViews[id]) {
-        this.entityViews[id] = new Sprite();
+        this.entityViews[id] = new EntityView();
         this.viewport.mainContainer.addChild(this.entityViews[id]);
       }
-      const view = this.entityViews[id];
-      view.texture = getTexture(entity.type);
-      view.anchor.set(0.5);
-      const hex = model.world.grid.getHex([entity.tile.q, entity.tile.r]);
-      if (hex != null) {
-        view.position.x = hex.x;
-        view.position.y = hex.y;
-      } else {
-        throw new Error(
-          `Invalid tile for entity: (${entity.tile.q}, ${entity.tile.r}`
-        );
-      }
+      this.entityViews[id].update(entity);
     }
 
     for (const view of this.otherViews) {

@@ -7,10 +7,17 @@ x turn based hero movement
 x spiral based procgen
 x entity hover tooltip
 x select move flow
-- game message floating panel
-- extra dummy entity for each player
-- shared logical state mutation
+x extra dummy entity for each player
+x shared logical state mutation
 x scrollbar and fixed height for log
+
+ui
+- show entity panel
+
+logic
+- prevent entity stacking
+
+polish
 - animate entity movements using pixi-tween
 
 cards
