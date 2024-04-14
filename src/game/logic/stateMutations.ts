@@ -24,6 +24,11 @@ export function addEntity(
   return state;
 }
 
+export function removeEntity(state: GameState, entityId: number) {
+  delete state.entities[entityId];
+  return state;
+}
+
 export function moveEntity(
   state: GameState,
   entityId: string,
@@ -79,6 +84,8 @@ export function castCard(
     playerState.maxMp++;
     playerState.mp++;
     playerState.manaThisTurn = true;
+  } else if (cardDef.type == "summon") {
+    state = summonEntity(state, cardDef.entityId, q, r);
   }
 
   // Log the action.
@@ -88,6 +95,22 @@ export function castCard(
     tile: { q, r },
   });
 
+  return state;
+}
+
+export function summonEntity(
+  state: GameState,
+  entityDefId: string,
+  q: number,
+  r: number
+) {
+  const tile = { q, r };
+  const owner = state.turn % 2 == 1;
+  state.summons.push({
+    entityDefId,
+    owner,
+    tile,
+  });
   return state;
 }
 
@@ -105,8 +128,9 @@ export function startGame(state: GameState) {
 
 export function nextTurn(state: GameState) {
   state.turn++;
-
   state.turnActions = [];
+
+  const isHostTurn = state.turn % 2 == 1;
 
   // Draw a card unless its the first turn.
   if (state.turn > 1) {
@@ -124,6 +148,17 @@ export function nextTurn(state: GameState) {
     p.mp = p.maxMp;
     p.manaThisTurn = false;
   });
+
+  // Resolve summons.
+  for (let i = state.summons.length - 1; i >= 0; i--) {
+    const summon = state.summons[i];
+    if (summon.owner == isHostTurn) {
+      state = addEntity(state, summon.entityDefId, {
+        ...summon,
+      });
+      state.summons.splice(i, 1);
+    }
+  }
 
   return state;
 }

@@ -9,6 +9,7 @@ export async function apiEndTurn(req: any) {
 export async function apiCast(req: any) {
   return apiRequest(req, "/api/cast");
 }
+
 async function apiRequest(req: any, url: string) {
   return await fetch(url, {
     method: "POST",

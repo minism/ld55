@@ -21,6 +21,11 @@ export interface GameState {
     host: CardSet;
     challenger: CardSet;
   };
+  summons: {
+    entityDefId: string;
+    owner: boolean;
+    tile: TilePosition;
+  }[];
 }
 
 export interface Entity {

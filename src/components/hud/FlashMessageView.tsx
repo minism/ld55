@@ -30,7 +30,8 @@ function FlashMessageView(props: Props) {
       }}
       className="text-white text-3xl"
     >
-      {model.flashMessage}
+      <div>{model.persistentMessage}</div>
+      <div>{model.flashMessage}</div>
     </div>
   );
 }

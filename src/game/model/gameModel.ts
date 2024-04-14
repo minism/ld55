@@ -1,6 +1,11 @@
+import { EntityDef } from "@/game/data/entityDefs";
 import { Entity } from "@/game/db/gameState";
 import { DbGame, UserProfile } from "@/game/db/types";
-import { castCard, moveEntity } from "@/game/logic/stateMutations";
+import {
+  castCard,
+  moveEntity,
+  summonEntity,
+} from "@/game/logic/stateMutations";
 import World from "@/game/model/World";
 import { Hex } from "honeycomb-grid";
 import _ from "lodash";
@@ -18,8 +23,11 @@ export class GameModel {
 
   // Client-only state.
   readonly ourUserId: string;
+  selectedCardIndex: number = -1;
   selectedEntity: Entity | null = null;
-  availableMoves: Hex[] = [];
+  selectedSummon: EntityDef | null = null;
+  selectedSpell: EntityDef | null = null;
+  availableActionLocations: Hex[] = []; // Relevant for move/summon/cast.
   flashMessage: string = "";
 
   constructor(dbGame: DbGame, ourUserId: string) {
@@ -33,6 +41,15 @@ export class GameModel {
 
   get state() {
     return this.dbGame.state;
+  }
+
+  get persistentMessage() {
+    if (this.selectedSummon != null) {
+      return "Select a location to summon";
+    } else if (this.selectedSpell != null) {
+      return "Select a location to cast";
+    }
+    return "";
   }
 
   provideUserProfiles(profiles: UserProfile[]) {
@@ -79,6 +96,14 @@ export class GameModel {
       : this.state.playerStates.challenger;
   }
 
+  getOurWizard() {
+    return _.chain(this.state.entities)
+      .values()
+      .filter((e) => e.def == "wizard" && e.owner == this.areHost())
+      .first()
+      .value();
+  }
+
   ownsEntity(entity: Entity) {
     return (
       (this.areHost() && entity.owner) ||
@@ -119,6 +144,11 @@ export class GameModel {
   predictMove(entityId: number, q: number, r: number) {
     // @ts-expect-error
     this.dbGame.state = moveEntity(this.dbGame.state, entityId, q, r);
+  }
+
+  predictSummon(entityDefId: string, q: number, r: number) {
+    // @ts-expect-error
+    this.dbGame.state = summonEntity(this.dbGame.state, entityDefId, q, r);
   }
 
   predictCast(cardIndex: number, q: number, r: number) {

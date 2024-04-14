@@ -99,6 +99,7 @@ export function initialGameState(): GameState {
     nextEntityId: 1,
     entities: {},
     turnActions: [],
+    summons: [],
   };
 
   // Place players on grass.

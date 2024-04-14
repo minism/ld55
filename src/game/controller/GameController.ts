@@ -1,6 +1,6 @@
 import { apiCast, apiMove } from "@/game/api";
 import { IGameEvents } from "@/game/controller/IGameEvents";
-import { entityDefsById } from "@/game/data/entityDefs";
+import { EntityDef, entityDefsById } from "@/game/data/entityDefs";
 import {
   fetchGameState,
   fetchPlayersForGame as fetchUserProfilesForGame,
@@ -133,24 +133,50 @@ export class GameController implements IGameEvents {
 
   private selectEntity(entity: Entity) {
     this.model.selectedEntity = entity;
-    this.model.availableMoves = [];
+    this.model.availableActionLocations = [];
     const def = entityDefsById[entity.def];
 
-    // Update available moves.
+    // Update available tiles.
     if (entity.remainingActions > 0) {
-      // Start with traversable tiles.
-      const availableTiles = _.chain(
-        this.model.world.findNeighborsMatching(
-          new Hex(entity.tile),
-          def.moveSpeed,
-          new Set([TileType.GRASS, TileType.FOREST])
-        )
-      )
-        // Filter out occupied spaces.
-        .filter((hex) => !this.model.hasEntityForHex(hex))
-        .value();
-      this.model.availableMoves = availableTiles;
+      this.updateAvailableLocations(
+        new Hex(entity.tile),
+        def.moveSpeed,
+        new Set([TileType.GRASS, TileType.FOREST]),
+        false /* allowOccupiedTiles */
+      );
     }
+  }
+
+  private startSummon(entityDef: EntityDef) {
+    this.model.selectedSummon = entityDef;
+    this.model.availableActionLocations = [];
+    const wizard = this.model.getOurWizard();
+
+    // Update available tiles.
+    this.updateAvailableLocations(
+      new Hex(wizard.tile),
+      entityDef.moveSpeed,
+      new Set([TileType.GRASS, TileType.FOREST]),
+      false /* allowOccupiedTiles */
+    );
+  }
+
+  private startSpell(entityDef: EntityDef) {}
+
+  private updateAvailableLocations(
+    origin: Hex,
+    radius: number,
+    allowedTileTypes: Set<TileType>,
+    allowOccupiedTiles: boolean
+  ) {
+    // Start with traversable tiles.
+    const availableTiles = _.chain(
+      this.model.world.findNeighborsMatching(origin, radius, allowedTileTypes)
+    )
+      // Filter out occupied spaces.
+      .filter((hex) => allowOccupiedTiles || !this.model.hasEntityForHex(hex))
+      .value();
+    this.model.availableActionLocations = availableTiles;
   }
 
   private async moveWithPrediction(entityId: number, q: number, r: number) {
@@ -168,8 +194,8 @@ export class GameController implements IGameEvents {
     await apiCast({
       gameId: this.model.dbGame.id,
       cardIndex,
-      q: 0,
-      r: 0,
+      q,
+      r,
     });
   }
 
@@ -271,8 +297,10 @@ export class GameController implements IGameEvents {
 
   public async handleClickWorldHex(hex: Hex) {
     // Ensure we always clear the selection.
-    const selectedEntity = this.model.selectedEntity;
+    const { selectedEntity, selectedSummon, selectedSpell } = this.model;
     this.model.selectedEntity = null;
+    this.model.selectedSummon = null;
+    this.model.selectedSpell = null;
 
     // No actions if its not our turn.
     if (!this.model.isOurTurn()) {
@@ -280,29 +308,48 @@ export class GameController implements IGameEvents {
       return;
     }
 
-    // If we have available moves, try moving.
+    const clickedOnAvailableLocation = this.model.availableActionLocations.find(
+      (h) => h.equals(hex)
+    );
+
+    // Try moving.
     if (
       selectedEntity != null &&
       selectedEntity.remainingActions > 0 &&
-      this.model.availableMoves.find((h) => h.equals(hex))
+      clickedOnAvailableLocation
     ) {
       return this.moveWithPrediction(selectedEntity.id, hex.q, hex.r);
     }
 
-    // Lookup the entity.
-    // TODO: Handle multiple entities.
-    const entities = this.model.getEntitiesForHex(hex);
-    if (entities.length < 1) {
-      return;
+    // Try summoning.
+    else if (selectedSummon != null && clickedOnAvailableLocation) {
+      return this.castWithPrediction(
+        this.model.selectedCardIndex,
+        hex.q,
+        hex.r
+      );
     }
 
-    const entity = entities[0];
-    if (!this.model.ownsEntity(entity)) {
-      // Ignore clicks on other entities for now.
-      return;
+    // Try casting.
+    else if (selectedSpell != null && clickedOnAvailableLocation) {
     }
 
-    this.selectEntity(entity);
+    // Try selecting an entity.
+    else {
+      // TODO: Handle multiple entities.
+      const entities = this.model.getEntitiesForHex(hex);
+      if (entities.length < 1) {
+        return;
+      }
+
+      const entity = entities[0];
+      if (!this.model.ownsEntity(entity)) {
+        // Ignore clicks on other entities for now.
+        return;
+      }
+
+      this.selectEntity(entity);
+    }
   }
 
   public handleTryCast(cardIndex: number): boolean {
@@ -325,6 +372,12 @@ export class GameController implements IGameEvents {
 
       this.castWithPrediction(cardIndex, 0, 0);
       return false;
+    } else if (cardDef.type == "summon") {
+      this.model.selectedCardIndex = cardIndex;
+      this.startSummon(entityDefsById[cardDef.entityId]);
+    } else if (cardDef.type == "spell") {
+      this.model.selectedCardIndex = cardIndex;
+      this.startSpell(entityDefsById[cardDef.entityId]);
     }
 
     return true;

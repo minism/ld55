@@ -3,15 +3,17 @@ import gameConfig from "@/game/config/gameConfig";
 import { IGameEvents } from "@/game/controller/IGameEvents";
 import World, { emptyWorld } from "@/game/model/World";
 import { GameModel } from "@/game/model/gameModel";
+import AvailableCastIndicator from "@/game/renderer/AvailableCastIndicator";
 import AvailableMoveIndicator from "@/game/renderer/AvailableMoveIndicator";
 import EntityView from "@/game/renderer/EntityView";
 import GameView from "@/game/renderer/GameView";
 import OverlayGrid from "@/game/renderer/OverlayGrid";
 import SelectionIndicator from "@/game/renderer/SelectionIndicator";
+import SummonIndicator from "@/game/renderer/SummonIndicator";
 import Viewport from "@/game/renderer/Viewport";
 import WorldTileView from "@/game/renderer/WorldTileView";
 import { Hex } from "honeycomb-grid";
-import { Application, FederatedPointerEvent, Rectangle, Sprite } from "pixi.js";
+import { Application, FederatedPointerEvent, Rectangle } from "pixi.js";
 
 let _renderer: GameRenderer | null = null;
 export async function initGameRenderer(
@@ -100,6 +102,8 @@ export default class GameRenderer {
       new OverlayGrid(this.viewport),
       new SelectionIndicator(this.viewport),
       new AvailableMoveIndicator(this.viewport),
+      new AvailableCastIndicator(this.viewport),
+      new SummonIndicator(this.viewport),
     ];
   }
 
