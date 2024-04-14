@@ -22,6 +22,8 @@
 
 html {
   font-size: 14px;
+
+  cursor: url('/assets/sprites/cursor-pointer.png'), auto;
 }
 
 body {
