@@ -6,7 +6,7 @@ x turn based hero movement
 
 x spiral based procgen
 x entity hover tooltip
-- select move flow
+x select move flow
 - game message floating panel
 - extra dummy entity for each player
 - shared logical state mutation

@@ -212,15 +212,32 @@ export class GameController implements IGameEvents {
 
   public async handleClickWorldHex(hex: Hex) {
     // Ensure we always clear the selection.
+    const selectedEntity = this.model.selectedEntity;
     this.model.selectedEntity = null;
 
     // No actions if its not our turn.
     if (!this.model.isOurTurn()) {
+      this.model.selectedEntity = null;
       return;
     }
 
-    const entities = this.model.getEntitiesForHex(hex);
+    // If we have available moves, try moving.
+    if (
+      selectedEntity != null &&
+      selectedEntity.remainingActions > 0 &&
+      this.model.availableMoves.find((h) => h.equals(hex))
+    ) {
+      return await apiMove({
+        gameId: this.model.dbGame.id,
+        entityId: selectedEntity.id,
+        q: hex.q,
+        r: hex.r,
+      });
+    }
+
+    // Lookup the entity.
     // TODO: Handle multiple entities.
+    const entities = this.model.getEntitiesForHex(hex);
     if (entities.length < 1) {
       return;
     }
@@ -232,20 +249,5 @@ export class GameController implements IGameEvents {
     }
 
     this.selectEntity(entity);
-
-    // const entity = Object.values(this.model.state.entities).find((e) =>
-    //   this.model.ownsEntity(e)
-    // );
-    // console.dir(entity);
-    // if (entity == null) {
-    //   return;
-    // }
-
-    // await apiMove({
-    //   gameId: this.clientProps.gameId,
-    //   entityId: entity.id,
-    //   q: hex.q,
-    //   r: hex.r,
-    // });
   }
 }

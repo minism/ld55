@@ -11,19 +11,11 @@ export async function POST(request: Request) {
   }
   const { game, req } = context;
 
-  // TODO: Check owner.
-  const entity = game.state.entities[req.entityId];
+  game.state.turn++;
 
-  if (entity.remainingActions < 1) {
-    return Response.json({});
-  }
+  // Refresh entity state.
+  game.state;
 
-  entity.tile = {
-    q: req.q,
-    r: req.r,
-  };
-  entity.remainingActions--;
   await updateGameState(game);
-
   return Response.json({});
 }

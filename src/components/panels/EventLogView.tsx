@@ -13,7 +13,7 @@ function EventLogView(props: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
 
   if (ref.current != null) {
-    ref.current.scrollTop = ref.current.scrollHeight;
+    ref.current.scrollTop = ref.current.scrollHeight
   }
 
   return (
