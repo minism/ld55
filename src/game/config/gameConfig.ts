@@ -5,7 +5,7 @@ const gameConfig = {
   defaultRenderScale: 2,
   panelPadding: 16,
   gameViewVerticalPadding: 100,
-  tooltipTimeout: 200,
+  tooltipTimeout: 50,
 
   generation: {
     worldSize: 16,

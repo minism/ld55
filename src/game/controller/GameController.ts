@@ -165,7 +165,9 @@ export class GameController implements IGameEvents {
     const pos = this.renderer.getScreenPositionForHex(hex);
     this.tooltip.positionX = pos.x;
     this.tooltip.positionY = pos.y;
-    this.tooltip.text = `Tile (${hex.q},${hex.r})`;
+
+    this.tooltip.tile = this.model!.world.getTile(hex);
+    this.tooltip.entities = this.model!.getEntitiesForHex(hex);
   }
 
   public async handleHideTooltip() {

@@ -7,13 +7,16 @@ interface Props {
 }
 
 function TooltipView(props: Props) {
-  if (!props.tooltip.visible) {
+  const { tooltip } = props;
+  if (!tooltip.visible || tooltip.entities.length < 1) {
     return null;
   }
 
+  const entity = tooltip.entities[0];
+
   return (
     <FloatingPanel left={props.tooltip.positionX} top={props.tooltip.positionY}>
-      <div>{props.tooltip.text}</div>
+      <div>{entity.type}</div>
     </FloatingPanel>
   );
 }
