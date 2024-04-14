@@ -23,8 +23,9 @@ x animate entity movements using pixi-tween
 x sprites
 x cards
 x main UI
-- deck logic
+x deck logic
 - casting
+- summon delay
 - actions per turn
 
 ui
