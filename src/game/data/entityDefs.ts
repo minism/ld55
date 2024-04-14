@@ -17,7 +17,7 @@ const entityDefs: EntityDef[] = [
     id: "wizard",
     type: "wizard",
     sprite: "wizard",
-    moveSpeed: 1,
+    moveSpeed: 2,
     attack: 0,
     hp: gameConfig.maxPlayerHealth,
   },

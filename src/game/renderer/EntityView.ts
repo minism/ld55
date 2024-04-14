@@ -25,7 +25,7 @@ export default class EntityView extends Container {
   public update(entity: Entity, ours: boolean) {
     const def = entityDefsById[entity.def];
     this.spr.texture = getTexture(def.sprite);
-    this.spr.anchor.set(0.5, 0.7);
+    this.spr.anchor.set(0.4, 0.5);
     this.indicator.texture = getTexture(
       ours ? "ourPlayerIndicator" : "opponentPlayerIndicator"
     );
