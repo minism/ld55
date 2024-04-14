@@ -16,17 +16,21 @@ function PlayerView(props: Props) {
     cardDefsByEntityId["bear"],
     cardDefsByEntityId["bear"],
     cardDefsByEntityId["bear"],
+    cardDefsByEntityId["bear"],
+    cardDefsByEntityId["bear"],
   ];
 
-  const cardViews = hand.map((c, i) => <CardView key={i} card={c} />);
+  const cardViews = hand.map((c, i) => (
+    <CardView key={i} card={c} position={i} totalCards={hand.length} />
+  ));
 
   return (
     <div
       style={{
         position: "fixed",
-        top: "90%",
+        bottom: "0",
         left: "50%",
-        transform: "translate(-50%, -50%)",
+        transform: "translate(-50%, 25%)",
         zIndex: 10,
       }}
       className="flex gap-2"
