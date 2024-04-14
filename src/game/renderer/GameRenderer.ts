@@ -1,27 +1,25 @@
+import { getTexture, loadAllAssets } from "@/game/assets";
 import gameConfig from "@/game/config/gameConfig";
 import { IGameEvents } from "@/game/controller/IGameEvents";
+import World, { emptyWorld } from "@/game/model/World";
 import { GameModel } from "@/game/model/gameModel";
-import { TooltipModel } from "@/game/model/tooltipModel";
 import OverlayGrid from "@/game/renderer/OverlayGrid";
 import Viewport from "@/game/renderer/Viewport";
 import WorldTileView from "@/game/renderer/WorldTileView";
+import { Hex } from "honeycomb-grid";
 import { Application, FederatedPointerEvent, Rectangle, Sprite } from "pixi.js";
-import { getTexture, loadAllAssets } from "@/game/assets";
-import World, { emptyWorld } from "@/game/model/World";
-import _ from "lodash";
 
 let _renderer: GameRenderer | null = null;
 export async function initGameRenderer(
   container: HTMLElement,
-  handler: IGameEvents,
-  tooltip: TooltipModel
+  handler: IGameEvents
 ) {
   if (_renderer != null) {
     console.warn("Not re-initializing GameRenderer, likely hot re loaded");
     return _renderer;
   }
 
-  _renderer = new GameRenderer(handler, tooltip);
+  _renderer = new GameRenderer(handler);
   await _renderer.init(container);
   return _renderer;
 }
@@ -32,13 +30,11 @@ export default class GameRenderer {
 
   private entityViews: Record<string, Sprite> = {};
   private worldTileViews: Record<string, WorldTileView> = {};
+  private tooltipTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(
-    private readonly handler: IGameEvents,
-    private readonly tooltip: TooltipModel
-  ) {
+  constructor(private readonly handler: IGameEvents) {
     this.app = new Application();
-    this.viewport = new Viewport(new Rectangle(0, 0, 0, 0), this.tooltip);
+    this.viewport = new Viewport(new Rectangle(0, 0, 0, 0));
   }
 
   public async init(container: HTMLElement) {
@@ -53,7 +49,7 @@ export default class GameRenderer {
     window.addEventListener("resize", () => this.resize());
 
     // Setup the viewport/camera which serves as the base container.
-    this.viewport = new Viewport(this.app.screen, this.tooltip);
+    this.viewport = new Viewport(this.app.screen);
     this.viewport.centerOn(0, 0);
     this.app.stage.addChild(this.viewport);
 
@@ -72,6 +68,7 @@ export default class GameRenderer {
       "pointermove",
       this.viewport.handlePointerMove.bind(this.viewport)
     );
+    this.app.stage.on("pointermove", this.handlePointerMove.bind(this));
     this.app.stage.on("pointerdown", (event: FederatedPointerEvent) => {
       if (this.viewport.hoveredWorldHex != null) {
         this.handler.handleClickWorldHex(this.viewport.hoveredWorldHex);
@@ -121,6 +118,26 @@ export default class GameRenderer {
         );
       }
     }
+  }
+
+  public getScreenPositionForHex(hex: Hex) {
+    return this.viewport.toGlobal({
+      x: hex.x * this.viewport.renderScale(),
+      y: hex.y * this.viewport.renderScale(),
+    });
+  }
+
+  private handlePointerMove(event: FederatedPointerEvent) {
+    // Tooltip timeout logic.
+    if (this.tooltipTimer != null) {
+      clearTimeout(this.tooltipTimer);
+    }
+    this.tooltipTimer = setTimeout(() => {
+      if (this.viewport.hoveredWorldHex != null) {
+        this.handler.handleShowHexTooltip(this.viewport.hoveredWorldHex);
+      }
+    }, gameConfig.tooltipTimeout);
+    this.handler.handleHideTooltip();
   }
 
   private resize() {

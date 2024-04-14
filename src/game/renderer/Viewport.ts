@@ -1,6 +1,5 @@
 import gameConfig from "@/game/config/gameConfig";
-import World, { emptyWorld } from "@/game/model/World";
-import { TooltipModel } from "@/game/model/tooltipModel";
+import { emptyWorld } from "@/game/model/World";
 import { Hex } from "honeycomb-grid";
 import { Container, FederatedPointerEvent, Point, Rectangle } from "pixi.js";
 
@@ -13,7 +12,7 @@ export default class Viewport extends Container {
 
   public hoveredWorldHex: Hex | null = null;
 
-  constructor(private screen: Rectangle, private tooltip: TooltipModel) {
+  constructor(private screen: Rectangle) {
     super();
 
     this.positionStart = this.position;
@@ -26,6 +25,10 @@ export default class Viewport extends Container {
     this.addChild(this.rawContainer);
   }
 
+  public renderScale() {
+    return this.mainContainer.scale.x;
+  }
+
   public handlePointerDown(event: FederatedPointerEvent) {
     this.positionStart = this.position.clone();
     this.dragStart = new Point(event.global.x, event.global.y);
@@ -36,20 +39,15 @@ export default class Viewport extends Container {
   }
 
   public handlePointerMove(event: FederatedPointerEvent) {
-    // Update tooltip.
+    // Update hovered world hex.
     const worldPoint = this.mainContainer.toLocal(event.global);
     const hex = emptyWorld.grid.pointToHex(worldPoint);
 
     // Check if hex exists.
     if (emptyWorld.grid.hasHex(hex)) {
       this.hoveredWorldHex = hex;
-      this.tooltip.visible = true;
-      this.tooltip.positionX = event.global.x;
-      this.tooltip.positionY = event.global.y;
-      this.tooltip.text = `Tile (${hex.q},${hex.r})`;
     } else {
       this.hoveredWorldHex = null;
-      this.tooltip.visible = false;
     }
 
     // Update dragging.

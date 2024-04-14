@@ -9,7 +9,7 @@ import { Game } from "@/game/db/types";
 import { EventLog } from "@/game/model/eventLog";
 import { GameModel } from "@/game/model/gameModel";
 import { TooltipModel } from "@/game/model/tooltipModel";
-import { initGameRenderer } from "@/game/renderer/GameRenderer";
+import GameRenderer, { initGameRenderer } from "@/game/renderer/GameRenderer";
 import { createClient } from "@/supabase/client";
 import { RealtimeChannel, RealtimePresenceState } from "@supabase/supabase-js";
 import { Hex } from "honeycomb-grid";
@@ -30,6 +30,7 @@ export class GameController implements IGameEvents {
   public readonly eventLog: EventLog;
   public readonly tooltip: TooltipModel;
 
+  private renderer: GameRenderer | null = null;
   private readonly presenceChannel: RealtimeChannel;
   private readonly dbChannel: RealtimeChannel;
 
@@ -66,12 +67,12 @@ export class GameController implements IGameEvents {
     }
 
     // Setup the renderer.
-    const renderer = await initGameRenderer(this.container, this, this.tooltip);
+    this.renderer = await initGameRenderer(this.container, this);
     this.eventLog.log("Initialized client view");
     autorun(() => {
-      renderer.update(this.model!);
+      this.renderer!.update(this.model!);
     });
-    renderer.update(this.model);
+    this.renderer.update(this.model);
 
     // Setup supabase realtime event listeners.
     this.presenceChannel
@@ -154,6 +155,21 @@ export class GameController implements IGameEvents {
   private async handleDbGameUpdate(game: Game) {
     this.eventLog.log(`Turn ${game.state.turn}`);
     this.model!.dbGame = game;
+  }
+
+  public async handleShowHexTooltip(hex: Hex) {
+    if (this.renderer == null) {
+      return;
+    }
+    this.tooltip.visible = true;
+    const pos = this.renderer.getScreenPositionForHex(hex);
+    this.tooltip.positionX = pos.x;
+    this.tooltip.positionY = pos.y;
+    this.tooltip.text = `Tile (${hex.q},${hex.r})`;
+  }
+
+  public async handleHideTooltip() {
+    this.tooltip.visible = false;
   }
 
   public async handleClickWorldHex(hex: Hex) {

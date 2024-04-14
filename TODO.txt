@@ -5,10 +5,10 @@ x player presence
 x turn based hero movement
 
 x spiral based procgen
-- game message floating panel
-- select move flow
-- extra dummy entity for each player
 - entity hover tooltip
+- select move flow
+- game message floating panel
+- extra dummy entity for each player
 - shared logical state mutation
 x scrollbar and fixed height for log
 - animate entity movements using pixi-tween
