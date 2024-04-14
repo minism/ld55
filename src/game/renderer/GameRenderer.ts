@@ -5,7 +5,7 @@ import { TooltipModel } from "@/game/model/tooltipModel";
 import OverlayGrid from "@/game/renderer/OverlayGrid";
 import Viewport from "@/game/renderer/Viewport";
 import WorldTileView from "@/game/renderer/WorldTileView";
-import { Application, Rectangle, Sprite } from "pixi.js";
+import { Application, FederatedPointerEvent, Rectangle, Sprite } from "pixi.js";
 import { getTexture, loadAllAssets } from "@/game/assets";
 import World, { emptyWorld } from "@/game/model/World";
 import _ from "lodash";
@@ -72,9 +72,10 @@ export default class GameRenderer {
       "pointermove",
       this.viewport.handlePointerMove.bind(this.viewport)
     );
-    this.app.stage.on("pointerdown", () => {
+    this.app.stage.on("pointerdown", (event: FederatedPointerEvent) => {
       if (this.viewport.hoveredWorldHex != null) {
         this.handler.handleClickWorldHex(this.viewport.hoveredWorldHex);
+        event.preventDefault();
       }
     });
 

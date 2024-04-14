@@ -12,11 +12,11 @@ function EventLogView(props: Props) {
 
   return (
     <FloatingPanel
+      title="Log"
       bottom={gameConfig.gameViewVerticalPadding / 2 + gameConfig.panelPadding}
       right={gameConfig.panelPadding}
     >
-      <div className="min-w-96">
-        <div className="mb-2">Event log</div>
+      <div className="w-[400px] h-64 overflow-y-scroll">
         <div className="font-mono text-xs">{lines}</div>
       </div>
     </FloatingPanel>

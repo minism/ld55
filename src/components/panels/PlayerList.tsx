@@ -21,10 +21,10 @@ function PlayerList(props: Props) {
 
   return (
     <FloatingPanel
+      title="Players"
       top={gameConfig.gameViewVerticalPadding / 2 + gameConfig.panelPadding}
       right={gameConfig.panelPadding}
     >
-      <div className="mb-2">Players (turn {props.model.state.turn})</div>
       {playerDiv(host)}
       {playerDiv(challenger)}
     </FloatingPanel>
