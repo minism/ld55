@@ -23,6 +23,9 @@ export default async function Game({ params }: { params: { id: string } }) {
       .from("game")
       .update({
         challenger_id: profile!.id,
+
+        // We need to update state to not break replication updates.
+        state: game!.state,
       })
       .eq("id", game!.id)
       .throwOnError();

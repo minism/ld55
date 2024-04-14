@@ -104,6 +104,8 @@ export class GameController implements IGameEvents {
     } else {
       this.log("Waiting for another player to join...");
     }
+
+    this.log(this.model.isOurTurn().toString());
   }
 
   private log(...args: Parameters<(typeof EventLog)["prototype"]["log"]>) {
