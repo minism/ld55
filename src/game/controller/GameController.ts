@@ -1,5 +1,6 @@
 import { apiMove } from "@/game/api";
 import { IGameEvents } from "@/game/controller/IGameEvents";
+import { entityDefsById } from "@/game/data/entityDefs";
 import {
   fetchGameState,
   fetchPlayersForGame,
@@ -123,12 +124,14 @@ export class GameController implements IGameEvents {
 
   private selectEntity(entity: Entity) {
     this.model.selectedEntity = entity;
+    this.model.availableMoves = [];
+    const def = entityDefsById[entity.def];
 
     // Update available moves.
     if (entity.remainingActions > 0) {
       const availableTiles = this.model.world.findNeighborsMatching(
         new Hex(entity.tile),
-        1,
+        def.moveSpeed,
         new Set([TileType.GRASS, TileType.FOREST])
       );
       this.model.availableMoves = availableTiles;
