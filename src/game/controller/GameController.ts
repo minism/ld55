@@ -198,15 +198,14 @@ export class GameController implements IGameEvents {
   }
 
   private async handleDbGameUpdate(game: Game) {
-    let newTurn = false;
-    if (game.state.turn > this.model.dbGame.state.turn) {
-      newTurn = true;
-    }
+    const lastTurn = this.model.dbGame.state.turn;
     this.model.dbGame = game;
 
-    const player = this.model.playerForTurn();
-    this.log("");
-    this.log(`[Turn ${game.state.turn} - ${player?.profile.username}]`);
+    if (game.state.turn > lastTurn) {
+      const player = this.model.playerForTurn();
+      this.log("");
+      this.log(`[Turn ${game.state.turn} - ${player?.profile.username}]`);
+    }
   }
 
   public async handleShowHexTooltip(hex: Hex) {
