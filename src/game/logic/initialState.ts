@@ -50,6 +50,9 @@ export function generateWorld() {
     world.updateTilesWithTraverser(t, limit, TileType.WATER);
   }
 
+  // Apply rotational symmetry.
+  world.applyRotationalSymmetry();
+
   return world;
 }
 

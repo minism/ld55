@@ -84,6 +84,10 @@ export default class World {
     return Object.values(this.tiles);
   }
 
+  copyTile(from: Hex, to: Hex) {
+    this.setTile(to, this.getTile(from).type);
+  }
+
   findClosestTileType(start: Hex, tileType: TileType) {
     for (const hex of this.grid.traverse(
       spiral({
@@ -96,6 +100,23 @@ export default class World {
       }
     }
     throw new Error("Unable to find a closest tile type!");
+  }
+
+  applyRotationalSymmetry() {
+    let test = 0;
+    for (const hex of this.grid) {
+      // Reflect the bottom half only.
+      if (hex.y < 0) {
+        continue;
+      }
+
+      const reflectedCoords = {
+        x: -hex.x,
+        y: -hex.y,
+      };
+      const reflectedHex = this.grid.pointToHex(reflectedCoords);
+      this.copyTile(hex, reflectedHex);
+    }
   }
 
   static key(hex: { q: number; r: number }) {
