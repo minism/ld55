@@ -7,12 +7,14 @@ const assetPaths = {
   hexForest: "/sprites/hex-forest.png",
   hexWater: "/sprites/hex-water.png",
   wizard: "/sprites/wizard.png",
-  jelly: "/sprites/bear.png",
-  golem: "/sprites/bear.png",
-  archer: "/sprites/bear.png",
+  jelly: "/sprites/jelly.png",
+  golem: "/sprites/golem.png",
+  archer: "/sprites/archer.png",
   airElemental: "/sprites/air-elemental-2.png",
   magicMissile: "/sprites/magic-missile.png",
   summon: "/sprites/summon.png",
+  blink: "/sprites/blink.png",
+  heal: "/sprites/heal.png",
 };
 
 export type AssetKey = keyof typeof assetPaths;
@@ -25,10 +27,14 @@ export async function loadAllAssets() {
   return await Promise.all(urls.map((url) => Assets.load(url)));
 }
 
-export function getAsset(key: AssetKey) {
+export function getAssetUrl(key: AssetKey) {
   const path = assetPaths[key];
   const url = `/assets${path}`;
-  return Assets.get(url);
+  return url;
+}
+
+export function getAsset(key: AssetKey) {
+  return Assets.get(getAssetUrl(key));
 }
 
 export function getTexture(key: AssetKey) {

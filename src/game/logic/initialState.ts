@@ -101,21 +101,5 @@ export function initialGameState(): GameState {
     },
   });
 
-  // Add some other example units.
-  state = addEntity(state, "bear", {
-    owner: true,
-    tile: {
-      q: hostStart.q + 1,
-      r: hostStart.r + 1,
-    },
-  });
-  state = addEntity(state, "bear", {
-    owner: false,
-    tile: {
-      q: challengerStart.q + 1,
-      r: challengerStart.r + 1,
-    },
-  });
-
   return state;
 }

@@ -4,6 +4,8 @@ import { useRef } from "react";
 import { useHover } from "usehooks-ts";
 import _ from "lodash";
 import { lerp } from "@/game/util/math";
+import { entityDefsById } from "@/game/data/entityDefs";
+import { getAssetUrl } from "@/game/assets";
 
 interface Props {
   card: CardDef;
@@ -21,13 +23,29 @@ function PlayerView(props: Props) {
   const rotation = isHovering ? 0 : lerp(-fanFactor, fanFactor, theta);
 
   const translateTheta = Math.abs(theta - 0.5);
-  const translateY = isHovering ? -50 : lerp(0, fanFactor * 3, translateTheta);
+  const translateY = isHovering ? -120 : lerp(0, fanFactor * 3, translateTheta);
 
-  const scale = isHovering ? 1.5 : 1;
+  const scale = isHovering ? 1.5 : 0.75;
+
+  const headerColor = card.type == "summon" ? "bg-sky-300" : "bg-purple-300";
+
+  const entityDef = entityDefsById[card.entityId];
+  const imageUrl = getAssetUrl(entityDef.sprite);
+
+  const contents =
+    card.type == "summon"
+      ? [
+          `Speed: ${entityDef.moveSpeed}`,
+          `Attack: ${entityDef.attack}`,
+          `HP: ${entityDef.hp}`,
+          null,
+          card.extraText,
+        ]
+      : [card.extraText];
 
   return (
     <div
-      className="bg-gray-200 rounded-lg text-black border-4 border-lg border-sky-900 w-32 -mx-8 transition-all"
+      className="bg-slate-700 rounded-lg text-black border-2 border-lg border-white w-36 -mx-8 transition-all text-xs cursor-pointer"
       style={{
         zIndex: isHovering ? 10 : 1,
         scale,
@@ -36,11 +54,35 @@ function PlayerView(props: Props) {
       }}
       ref={hoverRef}
     >
-      <div className="py-2 px-4 bg-gradient-to-b from-sky-400 to-sky-500">
-        {card.name}
+      <div
+        className={`p-1 font-semibold rounded-md border border-white ${headerColor}`}
+      >
+        <div className="flex">
+          <div className="flex-1">{card.name}</div>
+          <div className="bg-sky-900 text-white rounded-full w-4 h-4 text-center text-xs">
+            {card.cost}
+          </div>
+        </div>
       </div>
-      <div className="p-4">
-        <div className="h-24">Card</div>
+      <div
+        className="flex items-center justify-center p-2"
+        style={{
+          imageRendering: "pixelated",
+        }}
+      >
+        <img src={imageUrl} width={64} height={64} />
+      </div>
+      <div
+        className="p-2 m-2 bg-white rounded-lg"
+        style={{
+          fontSize: "0.6rem",
+        }}
+      >
+        <div className="h-24">
+          {contents.map((text, i) => (
+            <div key={i}>{text}&nbsp;</div>
+          ))}
+        </div>
       </div>
     </div>
   );

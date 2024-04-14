@@ -25,6 +25,7 @@ x sprites
 - deck logic
 - actions per turn
 - attacking
+- main UI
 - sound effects
 
 cards

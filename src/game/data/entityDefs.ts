@@ -3,7 +3,7 @@ import gameConfig from "@/game/config/gameConfig";
 import _ from "lodash";
 
 export interface EntityDef {
-  type: "wizard" | "summon";
+  type: "wizard" | "summon" | "spell";
   id: string;
   sprite: AssetKey;
   moveSpeed: number;
@@ -53,6 +53,30 @@ const entityDefs: EntityDef[] = [
     moveSpeed: 3,
     attack: 2,
     hp: 4,
+  },
+  {
+    id: "magicMissile",
+    type: "spell",
+    sprite: "magicMissile",
+    moveSpeed: 4,
+    attack: 2,
+    hp: 0,
+  },
+  {
+    id: "blink",
+    type: "spell",
+    sprite: "blink",
+    moveSpeed: 6,
+    attack: 2,
+    hp: 0,
+  },
+  {
+    id: "heal",
+    type: "spell",
+    sprite: "heal",
+    moveSpeed: 6,
+    attack: 2,
+    hp: 0,
   },
 ];
 
