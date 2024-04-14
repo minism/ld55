@@ -33,6 +33,11 @@ export class GameModel {
     return this.dbGame.state;
   }
 
+  playerForTurn() {
+    const hostsTurn = this.state.turn % 2 == 0;
+    return hostsTurn ? this.host : this.challenger;
+  }
+
   isOurTurn() {
     const hostsTurn = this.state.turn % 2 == 0;
     return (

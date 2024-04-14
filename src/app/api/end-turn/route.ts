@@ -1,4 +1,5 @@
 import { updateGameState } from "@/game/db/db";
+import { nextTurn } from "@/game/logic/stateMutations";
 import { fetchApiGameContext } from "@/server/apiContext";
 import { canRequesterAct } from "@/server/apiLogic";
 
@@ -11,10 +12,8 @@ export async function POST(request: Request) {
   }
   const { game, req } = context;
 
-  game.state.turn++;
-
-  // Refresh entity state.
-  game.state;
+  // @ts-expect-error: State fix
+  game.state = nextTurn(game.state);
 
   await updateGameState(game);
   return Response.json({});
