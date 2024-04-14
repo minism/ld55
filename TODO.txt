@@ -12,10 +12,10 @@ x shared logical state mutation
 x scrollbar and fixed height for log
 
 ui
-- show entity panel
+x show entity panel
 
 logic
-- prevent entity stacking
+x prevent entity stacking
 
 polish
 - animate entity movements using pixi-tween

@@ -12,6 +12,7 @@ export async function POST(request: Request) {
   const { game, req } = context;
 
   // TODO: Check owner.
+  // TODO: Check entity stacking.
   const entity = game.state.entities[req.entityId];
 
   if (entity.remainingActions < 1) {

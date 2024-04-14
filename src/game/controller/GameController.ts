@@ -16,7 +16,8 @@ import GameRenderer, { initGameRenderer } from "@/game/renderer/GameRenderer";
 import { createClient } from "@/supabase/client";
 import { RealtimeChannel, RealtimePresenceState } from "@supabase/supabase-js";
 import { Hex } from "honeycomb-grid";
-import { configure, reaction, autorun } from "mobx";
+import { autorun, configure } from "mobx";
+import _ from "lodash";
 
 configure({
   enforceActions: "never",
@@ -129,11 +130,17 @@ export class GameController implements IGameEvents {
 
     // Update available moves.
     if (entity.remainingActions > 0) {
-      const availableTiles = this.model.world.findNeighborsMatching(
-        new Hex(entity.tile),
-        def.moveSpeed,
-        new Set([TileType.GRASS, TileType.FOREST])
-      );
+      // Start with traversable tiles.
+      const availableTiles = _.chain(
+        this.model.world.findNeighborsMatching(
+          new Hex(entity.tile),
+          def.moveSpeed,
+          new Set([TileType.GRASS, TileType.FOREST])
+        )
+      )
+        // Filter out occupied spaces.
+        .filter((hex) => !this.model.hasEntityForHex(hex))
+        .value();
       this.model.availableMoves = availableTiles;
     }
   }

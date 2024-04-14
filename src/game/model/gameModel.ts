@@ -76,6 +76,10 @@ export class GameModel {
       .filter((e) => e.tile.q == hex.q && e.tile.r == hex.r)
       .value();
   }
+
+  hasEntityForHex(hex: Hex) {
+    return this.getEntitiesForHex(hex).length > 0;
+  }
 }
 
 export interface Player {
