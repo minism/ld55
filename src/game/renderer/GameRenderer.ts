@@ -3,6 +3,7 @@ import gameConfig from "@/game/config/gameConfig";
 import { IGameEvents } from "@/game/controller/IGameEvents";
 import World, { emptyWorld } from "@/game/model/World";
 import { GameModel } from "@/game/model/gameModel";
+import GameView from "@/game/renderer/GameView";
 import OverlayGrid from "@/game/renderer/OverlayGrid";
 import SelectionIndicator from "@/game/renderer/SelectionIndicator";
 import Viewport from "@/game/renderer/Viewport";
@@ -29,9 +30,9 @@ export default class GameRenderer {
   private readonly app: Application;
   private viewport: Viewport;
 
-  private selectionIndicator: SelectionIndicator | null = null;
   private entityViews: Record<string, Sprite> = {};
   private worldTileViews: Record<string, WorldTileView> = {};
+  private otherViews: GameView[] = [];
   private tooltipTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private readonly handler: IGameEvents) {
@@ -90,9 +91,11 @@ export default class GameRenderer {
       );
     }
 
-    // Other components.
-    new OverlayGrid(this.viewport.rawContainer);
-    this.selectionIndicator = new SelectionIndicator(this.viewport);
+    // Initialize other view components.
+    this.otherViews = [
+      new OverlayGrid(this.viewport),
+      new SelectionIndicator(this.viewport),
+    ];
   }
 
   public update(model: GameModel) {
@@ -122,7 +125,9 @@ export default class GameRenderer {
       }
     }
 
-    this.selectionIndicator?.update(model);
+    for (const view of this.otherViews) {
+      view.update(model);
+    }
   }
 
   public getScreenPositionForHex(hex: Hex) {

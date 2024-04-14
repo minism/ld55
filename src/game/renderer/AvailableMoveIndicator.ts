@@ -1,16 +1,13 @@
 import gameConfig from "@/game/config/gameConfig";
 import { emptyWorld } from "@/game/model/World";
 import { GameModel } from "@/game/model/gameModel";
-import GameView from "@/game/renderer/GameView";
 import Viewport from "@/game/renderer/Viewport";
 import { Graphics, Point } from "pixi.js";
 
-export default class SelectionIndicator extends GameView {
+export default class SelectionIndicator {
   private readonly g: Graphics;
 
-  constructor(viewport: Viewport) {
-    super(viewport);
-
+  constructor(private readonly viewport: Viewport) {
     const g = new Graphics().setStrokeStyle({
       width: 1,
       color: gameConfig.selectionColor,
