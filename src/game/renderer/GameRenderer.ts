@@ -66,10 +66,6 @@ export default class GameRenderer {
       this.viewport.handlePointerDown.bind(this.viewport)
     );
     this.app.stage.on(
-      "pointerup",
-      this.viewport.handlePointerUp.bind(this.viewport)
-    );
-    this.app.stage.on(
       "pointermove",
       this.viewport.handlePointerMove.bind(this.viewport)
     );
@@ -80,6 +76,12 @@ export default class GameRenderer {
         event.preventDefault();
       }
     });
+
+    // Global window events.
+    window.addEventListener(
+      "pointerup",
+      this.viewport.handlePointerUp.bind(this.viewport)
+    );
 
     // Start renderer.
     await assetPromise;

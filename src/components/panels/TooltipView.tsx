@@ -15,7 +15,10 @@ function TooltipView(props: Props) {
   const entity = tooltip.entities[0];
 
   return (
-    <FloatingPanel left={props.tooltip.positionX} top={props.tooltip.positionY}>
+    <FloatingPanel
+      left={props.tooltip.positionX + 20}
+      top={props.tooltip.positionY + 20}
+    >
       <div>{entity.type}</div>
     </FloatingPanel>
   );

@@ -1,3 +1,4 @@
+import FloatingPanel from "@/components/common/FloatingPanel";
 import GameButton from "@/components/common/GameButton";
 import { apiEndTurn } from "@/game/api";
 import gameConfig from "@/game/config/gameConfig";
@@ -18,18 +19,19 @@ function GameActionsView(props: Props) {
   }
 
   return (
-    <div
-      className="absolute"
-      style={{
-        bottom:
-          gameConfig.gameViewVerticalPadding / 2 + gameConfig.panelPadding,
-        left: gameConfig.panelPadding,
-      }}
-    >
-      {model.isOurTurn() ? (
-        <GameButton onClick={() => onClickFinishTurn()}>Finish turn</GameButton>
-      ) : null}
-    </div>
+    <>
+      <GameButton
+        style={{
+          position: "absolute",
+          right: gameConfig.panelPadding,
+          bottom: 280,
+        }}
+        onClick={() => onClickFinishTurn()}
+        disabled={!model.isOurTurn()}
+      >
+        {model.isOurTurn() ? "Finish turn" : "Waiting for opponent"}
+      </GameButton>
+    </>
   );
 }
 

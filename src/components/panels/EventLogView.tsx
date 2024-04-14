@@ -13,7 +13,7 @@ function EventLogView(props: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
 
   if (ref.current != null) {
-    ref.current.scrollTop = ref.current.scrollHeight
+    ref.current.scrollTop = ref.current.scrollHeight;
   }
 
   return (
@@ -22,7 +22,7 @@ function EventLogView(props: Props) {
       bottom={gameConfig.gameViewVerticalPadding / 2 + gameConfig.panelPadding}
       right={gameConfig.panelPadding}
     >
-      <div className="w-[400px] h-64 overflow-y-scroll" ref={ref}>
+      <div className="w-[350px] h-48 overflow-y-scroll" ref={ref}>
         <div className="font-mono text-xs">{lines}</div>
       </div>
     </FloatingPanel>

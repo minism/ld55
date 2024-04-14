@@ -1,8 +1,7 @@
-import FloatingPanel from "@/components/common/FloatingPanel";
 import GameActionsView from "@/components/panels/GameActionsView";
 import PlayerView from "@/components/panels/PlayerView";
-import gameConfig from "@/game/config/gameConfig";
-import { GameModel, Player } from "@/game/model/gameModel";
+import SelectedEntityView from "@/components/panels/SelectedEntityView";
+import { GameModel } from "@/game/model/gameModel";
 import { observer } from "mobx-react-lite";
 
 interface Props {
@@ -19,6 +18,7 @@ function GameHud(props: Props) {
       <GameActionsView model={props.model} />
       <PlayerView model={props.model} player={leftPlayer} left={true} />
       <PlayerView model={props.model} player={rightPlayer} left={false} />
+      <SelectedEntityView model={props.model} />
     </>
   );
 }

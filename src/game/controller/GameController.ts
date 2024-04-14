@@ -122,7 +122,6 @@ export class GameController implements IGameEvents {
    */
 
   private selectEntity(entity: Entity) {
-    this.log("Selected " + entity.id);
     this.model.selectedEntity = entity;
 
     // Update available moves.

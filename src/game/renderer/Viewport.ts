@@ -34,7 +34,7 @@ export default class Viewport extends Container {
     this.dragStart = new Point(event.global.x, event.global.y);
   }
 
-  public handlePointerUp(event: FederatedPointerEvent) {
+  public handlePointerUp() {
     this.dragStart = null;
   }
 
