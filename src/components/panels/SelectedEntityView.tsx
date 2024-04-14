@@ -12,7 +12,6 @@ interface Props {
 function GameActionsView(props: Props) {
   const { model } = props;
 
-  console.dir(model);
   if (model.selectedEntity == null) {
     return null;
   }

@@ -6,6 +6,12 @@ export interface GameState {
   tiles: WorldTile[];
   entities: Record<string, Entity>;
   nextEntityId: number;
+  playerStates: {
+    host: PlayerState;
+    challenger: PlayerState;
+  };
+
+  // Private player state which should eventually be secured.
 }
 
 export interface Entity {
@@ -18,4 +24,9 @@ export interface Entity {
 
   // Which player owns this entity. host = true, challenger = false
   owner: boolean;
+}
+
+export interface PlayerState {
+  hp: number;
+  mp: number;
 }

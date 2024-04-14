@@ -1,3 +1,4 @@
+import FillBar from "@/components/common/FillBar";
 import FloatingPanel from "@/components/common/FloatingPanel";
 import gameConfig from "@/game/config/gameConfig";
 import { GameModel, Player } from "@/game/model/gameModel";
@@ -25,6 +26,10 @@ function PlayerView(props: Props) {
       {...position}
     >
       Status: {player.connected ? "Connected" : "Disconnected"}
+      <div className="flex gap-2 items-center">
+        <div>HP: </div>
+        {/* <FillBar color="bg-red-500" amount={0.5} /> */}
+      </div>
     </FloatingPanel>
   );
 }

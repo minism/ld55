@@ -10,6 +10,8 @@ const gameConfig = {
   tooltipTimeout: 50,
   entityTweenTime: 0.1,
 
+  maxPlayerHealth: 20,
+
   generation: {
     worldSize: 16,
     // forestPatchSizeMin: 4,

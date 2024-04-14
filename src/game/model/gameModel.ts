@@ -1,5 +1,5 @@
 import { Entity } from "@/game/db/gameState";
-import { Game, UserProfile } from "@/game/db/types";
+import { DbGame, UserProfile } from "@/game/db/types";
 import World from "@/game/model/World";
 import { Hex } from "honeycomb-grid";
 import _ from "lodash";
@@ -10,7 +10,7 @@ import { makeAutoObservable } from "mobx";
 // performant, but good to start with.
 export class GameModel {
   // Client view of shared state, may be computed.
-  dbGame: Game;
+  dbGame: DbGame;
   world: World;
   host: Player | null = null;
   challenger: Player | null = null;
@@ -20,7 +20,7 @@ export class GameModel {
   selectedEntity: Entity | null = null;
   availableMoves: Hex[] = [];
 
-  constructor(dbGame: Game, ourUserId: string) {
+  constructor(dbGame: DbGame, ourUserId: string) {
     this.dbGame = dbGame;
     this.ourUserId = ourUserId;
     this.world = new World();
@@ -31,6 +31,23 @@ export class GameModel {
 
   get state() {
     return this.dbGame.state;
+  }
+
+  provideUserProfiles(profiles: UserProfile[]) {
+    const host = profiles.find((p) => p.id == this.dbGame.host_id);
+    const challenger = profiles.find((p) => p.id == this.dbGame.challenger_id);
+    if (this.host == null && host != null) {
+      this.host = {
+        connected: false,
+        profile: host,
+      };
+    }
+    if (this.challenger == null && challenger != null) {
+      this.challenger = {
+        connected: false,
+        profile: challenger,
+      };
+    }
   }
 
   playerForTurn() {

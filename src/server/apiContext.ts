@@ -1,5 +1,5 @@
 import { fetchGameState } from "@/game/db/db";
-import { Game } from "@/game/db/types";
+import { DbGame } from "@/game/db/types";
 import { Database } from "@/generated/database.types";
 import { getAuthenticatedSupabaseOrRedirect } from "@/supabase/server";
 import { SupabaseClient, User } from "@supabase/supabase-js";
@@ -8,7 +8,7 @@ export interface ApiGameContext {
   req: any;
   supabase: SupabaseClient<Database>;
   user: User;
-  game: Game;
+  game: DbGame;
 }
 
 // This should be a middleware.

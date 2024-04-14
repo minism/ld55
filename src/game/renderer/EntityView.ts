@@ -22,7 +22,7 @@ export default class EntityView extends Sprite {
     const hex = worldGrid.getHex([entity.tile.q, entity.tile.r]);
 
     if (hex != null) {
-      if (hex != this.lastHex) {
+      if (hex != this.lastHex && this.lastHex != null) {
         gsap.to(this, {
           x: hex.x,
           y: hex.y,
@@ -32,6 +32,7 @@ export default class EntityView extends Sprite {
         this.x = hex.x;
         this.y = hex.y;
       }
+      this.lastHex = hex;
     } else {
       throw new Error(
         `Invalid tile for entity: (${entity.tile.q}, ${entity.tile.r}`

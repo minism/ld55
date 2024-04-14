@@ -3,11 +3,11 @@ import { IGameEvents } from "@/game/controller/IGameEvents";
 import { entityDefsById } from "@/game/data/entityDefs";
 import {
   fetchGameState,
-  fetchPlayersForGame,
+  fetchPlayersForGame as fetchUserProfilesForGame,
   provideSupabaseClient,
 } from "@/game/db/db";
 import { Entity } from "@/game/db/gameState";
-import { Game } from "@/game/db/types";
+import { DbGame } from "@/game/db/types";
 import { TileType } from "@/game/model/WorldTile";
 import { EventLog } from "@/game/model/eventLog";
 import { GameModel } from "@/game/model/gameModel";
@@ -59,17 +59,8 @@ export class GameController implements IGameEvents {
     this.model = new GameModel(dbGame, this.clientProps.userId);
 
     // Init player state.
-    const { host, challenger } = await fetchPlayersForGame(dbGame);
-    this.model.host = {
-      profile: host,
-      connected: false,
-    };
-    if (challenger != null) {
-      this.model.challenger = {
-        profile: challenger,
-        connected: false,
-      };
-    }
+    const profiles = await fetchUserProfilesForGame(dbGame);
+    this.model.provideUserProfiles(profiles);
 
     // Setup the renderer.
     this.renderer = await initGameRenderer(this.container, this);
@@ -197,14 +188,20 @@ export class GameController implements IGameEvents {
     }
   }
 
-  private async handleDbGameUpdate(game: Game) {
+  private async handleDbGameUpdate(game: DbGame) {
     const lastTurn = this.model.dbGame.state.turn;
+    const lastChallengerId = this.model.dbGame.challenger_id;
     this.model.dbGame = game;
 
     if (game.state.turn > lastTurn) {
       const player = this.model.playerForTurn();
       this.log("");
       this.log(`[Turn ${game.state.turn} - ${player?.profile.username}]`);
+    }
+
+    if (game.challenger_id != lastChallengerId) {
+      const profiles = await fetchUserProfilesForGame(game);
+      this.model.provideUserProfiles(profiles);
     }
   }
 

@@ -1,5 +1,5 @@
 import { GameState } from "@/game/db/gameState";
-import { Game } from "@/game/db/types";
+import { DbGame } from "@/game/db/types";
 import { Database } from "@/generated/database.types";
 import { createClient } from "@/supabase/client";
 import { SupabaseClient } from "@supabase/supabase-js";
@@ -9,7 +9,7 @@ export function provideSupabaseClient(client: SupabaseClient<Database>) {
   supabase = client;
 }
 
-export async function fetchGameState(gameId: string): Promise<Game> {
+export async function fetchGameState(gameId: string): Promise<DbGame> {
   const game = (
     await supabase
       .from("game")
@@ -26,7 +26,7 @@ export async function fetchGameState(gameId: string): Promise<Game> {
   };
 }
 
-export async function updateGameState(game: Game) {
+export async function updateGameState(game: DbGame) {
   await supabase
     .from("game")
     .update({ state: game.state })
@@ -34,26 +34,12 @@ export async function updateGameState(game: Game) {
     .throwOnError();
 }
 
-export async function fetchPlayersForGame(game: Game) {
-  return {
-    host: (
-      await supabase
-        .from("user_profile")
-        .select()
-        .eq("id", game.host_id)
-        .single()
-        .throwOnError()
-    ).data!,
-    challenger:
-      game.challenger_id != null
-        ? (
-            await supabase
-              .from("user_profile")
-              .select()
-              .eq("id", game.challenger_id)
-              .single()
-              .throwOnError()
-          ).data
-        : null,
-  };
+export async function fetchPlayersForGame(game: DbGame) {
+  const ids = [game.host_id];
+  if (game.challenger_id != null) {
+    ids.push(game.challenger_id);
+  }
+  return (
+    await supabase.from("user_profile").select().in("id", ids).throwOnError()
+  ).data!;
 }

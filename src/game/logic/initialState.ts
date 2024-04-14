@@ -6,6 +6,7 @@ import { Hex, HexCoordinates, line, spiral } from "honeycomb-grid";
 import _ from "lodash";
 import { isDefined } from "../util/typescript";
 import { addEntity } from "@/game/logic/stateMutations";
+import gameConfig from "@/game/config/gameConfig";
 
 export function generateWorld() {
   // Use a tmp world for generation
@@ -61,8 +62,18 @@ export function initialGameState(): GameState {
 
   let state: GameState = {
     turn: 0,
-    nextEntityId: 1,
+    playerStates: {
+      host: {
+        hp: gameConfig.maxPlayerHealth,
+        mp: 1,
+      },
+      challenger: {
+        hp: gameConfig.maxPlayerHealth,
+        mp: 1,
+      },
+    },
     tiles: world.getAllTiles(),
+    nextEntityId: 1,
     entities: {},
   };
 
