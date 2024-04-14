@@ -35,8 +35,19 @@ function PlayerView(props: Props) {
       ? model.state.decks.host.length
       : model.state.decks.challenger.length;
 
+  const color = left
+    ? "bg-gradient-to-b from-sky-950 to-blue-950"
+    : "bg-gradient-to-b from-red-950 to-rose-950";
+  const headerColor = left
+    ? "bg-gradient-to-b from-sky-700 to-blue-800"
+    : "bg-gradient-to-b from-red-700 to-rose-800";
+  const borderColor = left ? "border-sky-600" : "border-red-600";
+
   return (
     <FloatingPanel
+      color={color}
+      headerColor={headerColor}
+      borderColor={borderColor}
       title={player?.profile.username}
       top={gameConfig.gameViewVerticalPadding / 2 + gameConfig.panelPadding}
       {...position}

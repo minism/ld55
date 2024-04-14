@@ -122,7 +122,7 @@ export default class GameRenderer {
         this.entityViews[id] = new EntityView();
         this.viewport.mainContainer.addChild(this.entityViews[id]);
       }
-      this.entityViews[id].update(entity);
+      this.entityViews[id].update(entity, entity.owner == model.areHost());
     }
 
     for (const view of this.otherViews) {

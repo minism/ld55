@@ -17,6 +17,8 @@ const assetPaths = {
   blink: "/sprites/blink.png",
   heal: "/sprites/heal.png",
   manaCrystal: "/sprites/mana-crystal.png",
+  ourPlayerIndicator: "/sprites/our-player-indicator.png",
+  opponentPlayerIndicator: "/sprites/opponent-player-indicator.png",
 };
 
 export type AssetKey = keyof typeof assetPaths;

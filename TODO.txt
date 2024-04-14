@@ -32,7 +32,7 @@ ui
 x library size
 x hand size
 x action log
-- player colors
+x player colors
 
 logic
 - attacking
