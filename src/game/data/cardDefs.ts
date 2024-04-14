@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 export interface CardDef {
-  type: "summon" | "spell";
+  type: "summon" | "spell" | "mana";
   entityId: string;
   name: string;
   cost: number;
@@ -9,6 +9,12 @@ export interface CardDef {
 }
 
 const cardDefs: CardDef[] = [
+  {
+    entityId: "manaCrystal",
+    type: "mana",
+    name: "Mana Crystal",
+    cost: 0,
+  },
   {
     entityId: "jelly",
     type: "summon",

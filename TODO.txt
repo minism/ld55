@@ -21,8 +21,9 @@ polish
 x animate entity movements using pixi-tween
 
 x sprites
-- cards
+x cards
 - deck logic
+- casting
 - actions per turn
 - attacking
 - main UI

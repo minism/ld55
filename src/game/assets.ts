@@ -15,6 +15,7 @@ const assetPaths = {
   summon: "/sprites/summon.png",
   blink: "/sprites/blink.png",
   heal: "/sprites/heal.png",
+  manaCrystal: "/sprites/mana-crystal.png",
 };
 
 export type AssetKey = keyof typeof assetPaths;
