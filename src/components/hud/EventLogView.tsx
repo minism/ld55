@@ -22,7 +22,10 @@ function EventLogView(props: Props) {
       bottom={gameConfig.gameViewVerticalPadding / 2 + gameConfig.panelPadding}
       right={gameConfig.panelPadding}
     >
-      <div className="w-[350px] h-48 overflow-y-scroll" ref={ref}>
+      <div
+        className="w-[350px] h-48 overflow-y-scroll hidden md:block"
+        ref={ref}
+      >
         <div className="font-mono text-xs">{lines}</div>
       </div>
     </FloatingPanel>

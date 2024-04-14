@@ -1,8 +1,8 @@
 "use client";
 
-import EventLogView from "@/components/panels/EventLogView";
-import GameHud from "@/components/panels/GameHud";
-import TooltipView from "@/components/panels/TooltipView";
+import EventLogView from "@/components/hud/EventLogView";
+import GameHud from "@/components/hud/GameHud";
+import TooltipView from "@/components/hud/TooltipView";
 import {
   GameClientProps,
   GameController,
