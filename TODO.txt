@@ -38,15 +38,17 @@ logic
 - attacking
 - win con
 - library empty
+- spell cast
 - forest movement
+- water movement
+- random drops
 
 polish
 - sound effects
 
 cards
-- summon turn time
-- mana per turn
-- summon mana crystal
+x summon turn time
+x mana per turn
 
 website
 - redirect login next URL
