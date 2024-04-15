@@ -17,7 +17,7 @@ export default class AvailableAttackIndicator extends GameView {
   public update(model: GameModel) {
     this.c.removeChildren();
     if (
-      model.selectedEntity == null ||
+      (model.selectedEntity == null && model.selectedSpell == null) ||
       model.availableAttackLocations.length < 1
     ) {
       return;

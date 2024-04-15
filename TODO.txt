@@ -42,7 +42,7 @@ x summon turn time
 x mana per turn
 
 last sprint
-- spell cast
+x spell cast
 - win con
 - handle library empty
 - game over state in db

@@ -1,7 +1,6 @@
 import { cardDefsByEntityId } from "@/game/data/cardDefs";
 import { entityDefsById } from "@/game/data/entityDefs";
 import { Entity, GameState } from "@/game/db/gameState";
-import { TilePosition } from "@/game/model/WorldTile";
 import _ from "lodash";
 
 // Note we don't use immutable data structures here but we still take in and
@@ -49,15 +48,30 @@ export function attackEntity(
     return;
   }
 
-  target.hp -= def.attack;
+  state = damageEntity(state, target, def.attack);
   entity.remainingAttacks--;
-
   state.turnActions.push({
     type: "attack",
     actionEntityDefId: entity.def,
     targetEntityDefId: target.def,
     tile: { q, r },
   });
+
+  // TODO: Check win-con.
+
+  return state;
+}
+
+export function damageEntity(state: GameState, target: Entity, amount: number) {
+  target.hp -= amount;
+
+  // Apply to player if entity was wizard.
+  if (target.def == "wizard") {
+    const playerState = target.owner
+      ? state.playerStates.host
+      : state.playerStates.challenger;
+    playerState.hp = target.hp;
+  }
 
   // Check death.
   if (target.hp < 1) {
@@ -246,7 +260,11 @@ function applySpell(
 
   switch (def.id) {
     case "magicMissile":
-      break;
+      const target = entityForTile(state, q, r);
+      if (target == null) {
+        return state;
+      }
+      return damageEntity(state, target, def.attack);
     case "blink":
       return moveEntity(state, casterWizard.id, q, r);
     case "heal":

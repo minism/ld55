@@ -83,15 +83,15 @@ const entityDefs: EntityDef[] = [
     type: "spell",
     sprite: "blink",
     moveSpeed: 6,
-    attack: 2,
+    attack: 0,
     hp: 0,
   },
   {
     id: "heal",
     type: "spell",
     sprite: "heal",
-    moveSpeed: 6,
-    attack: 2,
+    moveSpeed: 3,
+    attack: -3,
     hp: 0,
   },
   {

@@ -173,6 +173,7 @@ export class GameController implements IGameEvents {
   private startSummon(entityDef: EntityDef) {
     this.model.selectedSummon = entityDef;
     this.model.availableActionLocations = [];
+    this.model.availableAttackLocations = [];
     const wizard = this.model.getOurWizard();
 
     // Update available tiles.
@@ -187,14 +188,32 @@ export class GameController implements IGameEvents {
   private startSpell(entityDef: EntityDef) {
     this.model.selectedSpell = entityDef;
     this.model.availableActionLocations = [];
+    this.model.availableAttackLocations = [];
     const wizard = this.model.getOurWizard();
+
+    const tileTypes = new Set([
+      TileType.GRASS,
+      TileType.FOREST,
+      TileType.WATER,
+    ]);
+    let allowOccupiedTiles = true;
+
+    // TODO: Abstraction here obviously but no time
+    if (entityDef.id == "blink") {
+      tileTypes.delete(TileType.WATER);
+      allowOccupiedTiles = false;
+    }
+
+    if (entityDef.attack > 0) {
+      this.updateAttackLocations(new Hex(wizard.tile), entityDef.moveSpeed);
+    }
 
     // Update available tiles.
     this.updateAvailableLocations(
       new Hex(wizard.tile),
       entityDef.moveSpeed,
-      new Set([TileType.GRASS, TileType.FOREST, TileType.WATER]),
-      true /* allowOccupiedTiles */
+      tileTypes,
+      allowOccupiedTiles
     );
   }
 
@@ -202,7 +221,8 @@ export class GameController implements IGameEvents {
     origin: Hex,
     radius: number,
     allowedTileTypes: Set<TileType>,
-    allowOccupiedTiles: boolean
+    allowOccupiedTiles: boolean,
+    allowAttackLocations = false
   ) {
     // Start with traversable tiles.
     const availableTiles = _.chain(
@@ -211,6 +231,11 @@ export class GameController implements IGameEvents {
       // Filter out occupied spaces.
       .filter((hex) => allowOccupiedTiles || !this.model.hasEntityForHex(hex))
       .filter((hex) => allowOccupiedTiles || !this.model.hasSummonForHex(hex))
+      .filter(
+        (hex) =>
+          allowAttackLocations ||
+          !_.some(this.model.availableAttackLocations, (h) => h.equals(hex))
+      )
       .value();
     this.model.availableActionLocations = availableTiles;
   }
@@ -404,12 +429,17 @@ export class GameController implements IGameEvents {
     }
 
     // Try casting.
-    else if (selectedSpell != null && clickedOnAvailableLocation) {
-      return this.castWithPrediction(
-        this.model.selectedCardIndex,
-        hex.q,
-        hex.r
-      );
+    else if (selectedSpell != null) {
+      if (
+        (selectedSpell.attack > 0 && clickedOnAttackLocation) ||
+        clickedOnAvailableLocation
+      ) {
+        return this.castWithPrediction(
+          this.model.selectedCardIndex,
+          hex.q,
+          hex.r
+        );
+      }
     }
 
     // Try selecting an entity.
