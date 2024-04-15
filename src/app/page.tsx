@@ -1,6 +1,7 @@
 import { ButtonLink } from "@/components/common/ButtonLink";
 import { getAuthenticatedSupabaseOrRedirect } from "@/supabase/server";
 import _ from "lodash";
+import moment from "moment";
 
 export default async function Home() {
   const { user, supabase } = await getAuthenticatedSupabaseOrRedirect();
@@ -32,6 +33,10 @@ export default async function Home() {
     .neq("host_id", user.id)
     .is("challenger_id", null);
 
+  function created(game: any) {
+    return `(${moment(game.created_at).fromNow()})`;
+  }
+
   if (openGames.error) {
     throw openGames.error;
   }
@@ -53,7 +58,8 @@ export default async function Home() {
                 Game{" "}
                 {game.user_profile?.username
                   ? " with " + game.user_profile.username
-                  : "(Waiting for opponent)"}
+                  : "(Waiting for opponent)"}{" "}
+                {created(game)}
               </div>
             </li>
           );
@@ -71,7 +77,8 @@ export default async function Home() {
                 Game{" "}
                 {game.user_profile?.username
                   ? " with " + game.user_profile.username
-                  : "(Waiting for opponent)"}
+                  : "(Waiting for opponent)"}{" "}
+                {created(game)}
               </div>
             </li>
           );
