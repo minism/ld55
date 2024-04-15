@@ -1,7 +1,7 @@
 import { loadAllAssets } from "@/game/assets";
 import gameConfig from "@/game/config/gameConfig";
 import { IGameEvents } from "@/game/controller/IGameEvents";
-import World, { emptyWorld } from "@/game/model/World";
+import World, { emptyWorld, worldGrid } from "@/game/model/World";
 import { GameModel } from "@/game/model/gameModel";
 import AvailableAttackIndicator from "@/game/renderer/AvailableAttackIndicator";
 import AvailableCastIndicator from "@/game/renderer/AvailableCastIndicator";
@@ -107,6 +107,25 @@ export default class GameRenderer {
       new AvailableAttackIndicator(this.viewport),
       new SummonIndicator(this.viewport),
     ];
+  }
+
+  public entityAttackAnimation(model: GameModel, from: number, to: number) {
+    const fromView = this.entityViews[from];
+    if (fromView == null) {
+      return;
+    }
+
+    const toEntity = model.state.entities[to];
+    if (toEntity == null) {
+      return;
+    }
+
+    const hex = worldGrid.getHex([toEntity.tile.q, toEntity.tile.r]);
+    if (hex == null) {
+      return;
+    }
+
+    fromView.playAttackAnimation(hex);
   }
 
   public update(model: GameModel) {

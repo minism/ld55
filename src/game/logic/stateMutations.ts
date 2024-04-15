@@ -54,6 +54,8 @@ export function attackEntity(
     type: "attack",
     actionEntityDefId: entity.def,
     targetEntityDefId: target.def,
+    actionEntityId: entity.id,
+    targetEntityId: target.id,
     tile: { q, r },
   });
 

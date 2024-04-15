@@ -47,9 +47,11 @@ x win con
 x handle library empty
 x fix scroll into view
 x better / smaller map
+x simple attack animation
 - better join table
 - redirect login next URL
-- simple attack animation
+- log update time in db
+- simple cast animation
 - forest movement
 - water movements
 - random drops

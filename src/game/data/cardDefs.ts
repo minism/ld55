@@ -52,7 +52,7 @@ const cardDefs: CardDef[] = [
     entityId: "magicMissile",
     type: "spell",
     name: "Magic Missile",
-    cost: 1,
+    cost: 2,
     extraText: "Deals 2 damage to any target",
   },
   {
@@ -67,7 +67,7 @@ const cardDefs: CardDef[] = [
     type: "spell",
     name: "Heal",
     cost: 3,
-    extraText: "Heals creatures in an area",
+    extraText: "Heals creatures in an area - NOT YET IMPLEMENTED",
   },
 ];
 

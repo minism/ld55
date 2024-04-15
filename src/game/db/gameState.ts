@@ -53,6 +53,8 @@ export interface TurnAction {
   type: "draw" | "cast" | "attack" | "kill";
   actionEntityDefId?: string;
   targetEntityDefId?: string;
+  actionEntityId?: number;
+  targetEntityId?: number;
   tile?: TilePosition;
 }
 

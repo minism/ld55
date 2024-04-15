@@ -253,6 +253,14 @@ export class GameController implements IGameEvents {
 
   private async attackWithPrediction(entityId: number, q: number, r: number) {
     this.model.predictAttack(entityId, q, r);
+    const targetEntity = this.model.getEntitiesForHex(new Hex([q, r]))[0];
+    if (targetEntity != null) {
+      this.renderer?.entityAttackAnimation(
+        this.model,
+        entityId,
+        targetEntity.id
+      );
+    }
     return await apiAttack({
       gameId: this.model.dbGame.id,
       entityId,
@@ -361,6 +369,20 @@ export class GameController implements IGameEvents {
       const action = game.state.turnActions[i];
       this.lastLoggedTurnActionIndex = i;
       this.logTurnAction(action);
+
+      // Only show this animation on the remote path.
+      if (
+        action.type == "attack" &&
+        !this.model.ownsEntity(
+          this.model.state.entities[action.actionEntityId!]
+        )
+      ) {
+        this.renderer?.entityAttackAnimation(
+          this.model,
+          action.actionEntityId!,
+          action.targetEntityId!
+        );
+      }
     }
   }
 

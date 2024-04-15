@@ -12,6 +12,8 @@ export default class EntityView extends Container {
   private spr: Sprite;
   private indicator: Sprite;
 
+  private animPromise: Promise<unknown> | null = null;
+
   constructor() {
     super();
     this.lastHex = null;
@@ -34,11 +36,7 @@ export default class EntityView extends Container {
 
     if (hex != null) {
       if (hex != this.lastHex && this.lastHex != null) {
-        gsap.to(this, {
-          x: hex.x,
-          y: hex.y,
-          duration: gameConfig.entityTweenTime,
-        });
+        this.queueAnimation(hex);
       } else {
         this.x = hex.x;
         this.y = hex.y;
@@ -49,5 +47,25 @@ export default class EntityView extends Container {
         `Invalid tile for entity: (${entity.tile.q}, ${entity.tile.r}`
       );
     }
+  }
+
+  public async playAttackAnimation(hex: Hex) {
+    const orig = { x: this.x, y: this.y };
+    await this.queueAnimation(hex);
+    await this.queueAnimation(orig);
+  }
+
+  private async queueAnimation({ x, y }: { x: number; y: number }) {
+    if (this.animPromise != null) {
+      await this.animPromise;
+    }
+    this.animPromise = gsap
+      .to(this, {
+        x,
+        y,
+        duration: gameConfig.entityTweenTime,
+      })
+      .then();
+    await this.animPromise;
   }
 }
