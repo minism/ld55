@@ -8,7 +8,7 @@ export default async function Home() {
   // Fetch games.
   const hostedGames = await supabase
     .from("game")
-    .select("*")
+    .select("*, user_profile!public_game_challenger_id_fkey (*)")
     .eq("host_id", user.id);
   if (hostedGames.error) {
     throw hostedGames.error;
@@ -16,7 +16,7 @@ export default async function Home() {
 
   const joinedGames = await supabase
     .from("game")
-    .select()
+    .select("*, user_profile!public_game_host_id_fkey (*)")
     .eq("challenger_id", user.id);
   if (joinedGames.error) {
     throw joinedGames.error;
@@ -37,33 +37,46 @@ export default async function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-16">
-      <h1>Your games</h1>
-      <ul>
+    <main className="flex min-h-screen flex-col p-16">
+      <h1 className="text-4xl mb-8">Summoner's Duel!</h1>
+      <div className="max-w-2xl mb-8">
+        <ButtonLink href="/new">Create new game</ButtonLink>
+      </div>
+      <h1 className="text-2xl">Your games</h1>
+      <ul className="p-4">
         {hostedGames.data.map((game) => {
           const url = `/game/${game.id}`;
           return (
-            <li key={game.id}>
-              <a href={url}>Game {game.id}</a>
+            <li key={game.id} className="p-2 flex items-center gap-2">
+              <ButtonLink href={url}>Join</ButtonLink>
+              <div>
+                Game{" "}
+                {game.user_profile?.username
+                  ? " with " + game.user_profile.username
+                  : "(Waiting for opponent)"}
+              </div>
             </li>
           );
         })}
       </ul>
 
-      <h1>Open games</h1>
-      <ul>
+      <h1 className="text-2xl">Open games</h1>
+      <ul className="p-4">
         {openGames.data.map((game) => {
           const url = `/game/${game.id}`;
           return (
-            <li key={game.id}>
-              <a href={url}>
-                Game {game.id} from {game.user_profile!.username}
-              </a>
+            <li key={game.id} className="p-2 flex items-center gap-2">
+              <ButtonLink href={url}>Join</ButtonLink>
+              <div>
+                Game{" "}
+                {game.user_profile?.username
+                  ? " with " + game.user_profile.username
+                  : "(Waiting for opponent)"}
+              </div>
             </li>
           );
         })}
       </ul>
-      <ButtonLink href="/new">Create game</ButtonLink>
     </main>
   );
 }
