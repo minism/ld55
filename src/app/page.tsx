@@ -1,44 +1,51 @@
 import { ButtonLink } from "@/components/common/ButtonLink";
+import { isDefined } from "@/game/util/typescript";
 import { getAuthenticatedSupabaseOrRedirect } from "@/supabase/server";
 import _ from "lodash";
-import moment from "moment";
+import moment, { now } from "moment";
 
 export default async function Home() {
   const { user, supabase } = await getAuthenticatedSupabaseOrRedirect();
 
-  // Fetch games.
-  const hostedGames = await supabase
+  // Fetch games created in the last 24 hours only for now.
+  const { data: allGames } = await supabase
     .from("game")
-    .select("*, user_profile!public_game_challenger_id_fkey (*)")
-    .eq("host_id", user.id);
-  if (hostedGames.error) {
-    throw hostedGames.error;
-  }
+    .select("*")
+    .gt("created_at", moment().subtract(1, "day").toISOString())
+    .throwOnError();
 
-  const joinedGames = await supabase
-    .from("game")
-    .select("*, user_profile!public_game_host_id_fkey (*)")
-    .eq("challenger_id", user.id);
-  if (joinedGames.error) {
-    throw joinedGames.error;
-  }
-
-  const yourGames = _.chain([...hostedGames.data, ...joinedGames.data])
-    .uniqBy((g) => g.id)
+  const playerIds = _.chain(allGames)
+    .map((g) => [g.host_id, g.challenger_id])
+    .flatten()
+    .filter(isDefined)
+    .uniq()
     .value();
 
-  const openGames = await supabase
-    .from("game")
-    .select("*, user_profile!public_game_host_id_fkey (*)")
-    .neq("host_id", user.id)
-    .is("challenger_id", null);
+  const { data: allPlayers } = await supabase
+    .from("user_profile")
+    .select("*")
+    .in("id", playerIds)
+    .throwOnError();
+
+  const playersById = _.chain(allPlayers)
+    .keyBy((p) => p.id)
+    .value();
+
+  const yourGames = allGames!.filter(
+    (g) => g.host_id == user.id || g.challenger_id == user.id
+  );
+  const openGames = allGames!.filter(
+    (g) => g.host_id != user.id && g.challenger_id == null
+  );
+  const specGames = allGames!.filter(
+    (g) =>
+      g.challenger_id != null &&
+      g.challenger_id != user.id &&
+      g.host_id != user.id
+  );
 
   function created(game: any) {
     return `(${moment(game.created_at).fromNow()})`;
-  }
-
-  if (openGames.error) {
-    throw openGames.error;
   }
 
   return (
@@ -49,16 +56,18 @@ export default async function Home() {
       </div>
       <h1 className="text-2xl">Your games</h1>
       <ul className="p-4">
-        {hostedGames.data.map((game) => {
+        {yourGames.map((game) => {
           const url = `/game/${game.id}`;
+          const other =
+            game.host_id == user.id
+              ? playersById[game.challenger_id ?? ""]
+              : playersById[game.host_id];
           return (
             <li key={game.id} className="p-2 flex items-center gap-2">
               <ButtonLink href={url}>Join</ButtonLink>
               <div>
                 Game{" "}
-                {game.user_profile?.username
-                  ? " with " + game.user_profile.username
-                  : "(Waiting for opponent)"}{" "}
+                {other ? " with " + other.username : "(Waiting for opponent)"}{" "}
                 {created(game)}
               </div>
             </li>
@@ -68,17 +77,31 @@ export default async function Home() {
 
       <h1 className="text-2xl">Open games</h1>
       <ul className="p-4">
-        {openGames.data.map((game) => {
+        {openGames.map((game) => {
           const url = `/game/${game.id}`;
+          const host = playersById[game.host_id];
           return (
             <li key={game.id} className="p-2 flex items-center gap-2">
               <ButtonLink href={url}>Join</ButtonLink>
               <div>
-                Game{" "}
-                {game.user_profile?.username
-                  ? " with " + game.user_profile.username
-                  : "(Waiting for opponent)"}{" "}
-                {created(game)}
+                Game with {host.username} {created(game)}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+
+      <h1 className="text-2xl">Other games in progress</h1>
+      <ul className="p-4">
+        {specGames.map((game) => {
+          const url = `/game/${game.id}`;
+          const host = playersById[game.host_id];
+          const chal = playersById[game.challenger_id];
+          return (
+            <li key={game.id} className="p-2 flex items-center gap-2">
+              <ButtonLink href={url}>Watch</ButtonLink>
+              <div>
+                Game between {host.username} and {chal.username} {created(game)}
               </div>
             </li>
           );
