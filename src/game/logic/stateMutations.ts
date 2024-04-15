@@ -213,8 +213,8 @@ export function nextTurn(state: GameState) {
     return endGame(state, true);
   }
 
-  // Draw a card unless its the first turn.
-  if (state.turn > 1) {
+  // Draw cards every other turn for players.
+  if (state.turn % 4 == 1 || state.turn % 4 == 2) {
     const isHostTurn = state.turn % 2 == 1;
 
     // Check mill.

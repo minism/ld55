@@ -45,13 +45,13 @@ last sprint
 x spell cast
 x win con
 x handle library empty
-- fix scroll into view
+x fix scroll into view
 - game over state in db
 - better join table
 - redirect login next URL
 - forest movement
 - water movements
 - random drops
-- better / smaller map
+x better / smaller map
 - simple attack animation
 - sound effects

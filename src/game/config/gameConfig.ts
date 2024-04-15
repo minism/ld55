@@ -13,7 +13,7 @@ const gameConfig = {
   maxPlayerHealth: 20,
 
   generation: {
-    worldSize: 16,
+    worldSize: 15,
     // forestPatchSizeMin: 4,
     // forestPatchSizeMax: 12,
     // waterPatchSizeMin: 3,

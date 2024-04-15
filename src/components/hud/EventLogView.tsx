@@ -2,7 +2,7 @@ import FloatingPanel from "@/components/common/FloatingPanel";
 import gameConfig from "@/game/config/gameConfig";
 import { EventLog } from "@/game/model/eventLog";
 import { observer } from "mobx-react-lite";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 interface Props {
   eventLog: EventLog;
@@ -12,9 +12,11 @@ function EventLogView(props: Props) {
   const lines = props.eventLog.messages.map((m, i) => <div key={i}>{m}</div>);
   const endRef = useRef<HTMLDivElement | null>(null);
 
-  if (endRef.current != null) {
-    endRef.current.scrollIntoView({ behavior: "instant" });
-  }
+  useEffect(() => {
+    if (endRef.current != null) {
+      endRef.current.scrollIntoView({ behavior: "instant" });
+    }
+  });
 
   return (
     <FloatingPanel
