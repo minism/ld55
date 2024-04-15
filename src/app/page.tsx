@@ -96,7 +96,7 @@ export default async function Home() {
         {specGames.map((game) => {
           const url = `/game/${game.id}`;
           const host = playersById[game.host_id];
-          const chal = playersById[game.challenger_id];
+          const chal = playersById[game.challenger_id!];
           return (
             <li key={game.id} className="p-2 flex items-center gap-2">
               <ButtonLink href={url}>Watch</ButtonLink>
