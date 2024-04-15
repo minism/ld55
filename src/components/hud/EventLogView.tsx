@@ -13,7 +13,7 @@ function EventLogView(props: Props) {
   const endRef = useRef<HTMLDivElement | null>(null);
 
   if (endRef.current != null) {
-    endRef.current.scrollIntoView({ behavior: "smooth" });
+    endRef.current.scrollIntoView({ behavior: "instant" });
   }
 
   return (
@@ -24,7 +24,7 @@ function EventLogView(props: Props) {
     >
       <div className="w-[350px] h-48 overflow-y-scroll hidden md:block">
         <div className="font-mono text-xs">{lines}</div>
-        <div ref={endRef} />
+        <div ref={endRef}>&nbsp;</div>
       </div>
     </FloatingPanel>
   );

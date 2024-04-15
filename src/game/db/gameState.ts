@@ -13,6 +13,7 @@ export interface GameState {
   turnActions: TurnAction[];
 
   // Private player state which should eventually be secured.
+  winner: boolean | null;
   decks: {
     host: CardSet;
     challenger: CardSet;

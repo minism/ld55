@@ -46,7 +46,10 @@ export class GameModel {
   }
 
   get persistentMessage() {
-    if (this.selectedSummon != null) {
+    if (this.state.winner != null) {
+      const winner = this.state.winner ? this.host : this.challenger;
+      return `${winner?.profile.username} won the game!`;
+    } else if (this.selectedSummon != null) {
       return "Select a location to summon";
     } else if (this.selectedSpell != null) {
       return "Select a location to cast";
@@ -82,6 +85,10 @@ export class GameModel {
   }
 
   isOurTurn() {
+    // TODO: better wincon logic
+    if (this.state.winner != null) {
+      return false;
+    }
     const hostsTurn = this.state.turn % 2 == 1;
     return (
       this.hasGameStarted() &&

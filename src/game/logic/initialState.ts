@@ -73,6 +73,7 @@ export function initialGameState(): GameState {
 
   let state: GameState = {
     turn: 0,
+    winner: null,
     playerStates: {
       host: {
         hp: gameConfig.maxPlayerHealth,

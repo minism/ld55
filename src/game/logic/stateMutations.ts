@@ -76,9 +76,10 @@ export function damageEntity(state: GameState, target: Entity, amount: number) {
   // Check death.
   if (target.hp < 1) {
     state = killEntity(state, target.id);
+    if (target.def == "wizard") {
+      return endGame(state, !target.owner);
+    }
   }
-
-  // TODO: Check win-con.
 
   return state;
 }
@@ -169,7 +170,7 @@ export function castCard(
 
   return state;
 }
-
+``;
 export function summonEntity(
   state: GameState,
   entityDefId: string,
@@ -204,9 +205,24 @@ export function nextTurn(state: GameState) {
 
   const isHostTurn = state.turn % 2 == 1;
 
+  // Wincon check - stopgap.
+  if (state.playerStates.host.hp < 1) {
+    return endGame(state, false);
+  }
+  if (state.playerStates.challenger.hp < 1) {
+    return endGame(state, true);
+  }
+
   // Draw a card unless its the first turn.
   if (state.turn > 1) {
     const isHostTurn = state.turn % 2 == 1;
+
+    // Check mill.
+    const deck = isHostTurn ? state.decks.host : state.decks.challenger;
+    if (deck.length < 1) {
+      return endGame(state, !isHostTurn);
+    }
+
     state = drawCards(state, 1, isHostTurn);
   }
 
@@ -280,9 +296,11 @@ function applySpell(
 function drawCards(state: GameState, count: number, host: boolean) {
   const deck = host ? state.decks.host : state.decks.challenger;
   const hand = host ? state.hands.host : state.hands.challenger;
-  // TODO: Overflow here.
   for (let i = 0; i < count; i++) {
-    hand.push(deck.pop()!);
+    const card = deck.pop();
+    if (card != null) {
+      hand.push(card);
+    }
   }
 
   state.turnActions.push({ type: "draw" });
@@ -294,4 +312,9 @@ function entityForTile(state: GameState, q: number, r: number) {
   return Object.values(state.entities).find(
     (e) => e.tile.q == q && e.tile.r == r
   );
+}
+
+function endGame(state: GameState, hostIsWinner: boolean) {
+  state.winner = hostIsWinner;
+  return state;
 }
