@@ -28,7 +28,7 @@ function FlashMessageView(props: Props) {
         transform: "translate(-50%, 25%)",
         zIndex: 5,
       }}
-      className="text-white text-3xl"
+      className="text-white text-3xl pointer-events-none select-none"
     >
       <div>{model.persistentMessage}</div>
       <div>{model.flashMessage}</div>
